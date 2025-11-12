@@ -59,6 +59,28 @@ uint32_t cms_range_query_str(CountMinSketch* cms, const char** items, int n) {
   return total;
 }
 
+// inner product query
+// computes row-wise dot product between two sketches, and returns the min of these row-wise dot products
+uint32_t cms_inner_product(CountMinSketch* cms_a, CountMinSketch* cms_b) {
+  if(cms_a->depth != cms_b->depth) {
+    fprintf(stderr, "Error: the two sketches must have the same number of rows. Rows given: %d, %d\n", cms_a->depth, cms_b->depth);
+    return -1;
+  }
+  if(cms_a->width != cms_b->width) {
+    fprintf(stderr, "Error: the two sketches must have the same number of columns. Columns given: %d, %d\n", cms_a->width, cms_b->width);
+    return -2;
+  }
+  uint32_t result = UINT_MAX;
+  for(uint32_t i = 0; i < cms_a->depth; i++) {
+    uint32_t row_dot_product = 0;
+    for(uint32_t j = 0; j < cms_a->width; j++) {
+      row_dot_product += (cms_a->table[i][j] * cms_b->table[i][j]);
+    }
+    result = min(result, row_dot_product);
+  }
+  return result;
+}
+
 // initialize cms creating a table and assigning a set of hash functions
 uint32_t cms_init(CountMinSketch* cms, double epsilon, double delta, uint32_t prime) {
   if (epsilon <= 0.0 || epsilon >= 1.0) {
@@ -74,9 +96,9 @@ uint32_t cms_init(CountMinSketch* cms, double epsilon, double delta, uint32_t pr
   cms->width = ceil(exp(1.0) / epsilon);
   cms->depth = ceil(log(1 / delta));
   cms->table = malloc(cms->depth * sizeof(uint32_t*));
-  for (int i = 0; i < cms->depth; i++) {
+  for (uint32_t i = 0; i < cms->depth; i++) {
     cms->table[i] = malloc(cms->width * sizeof(uint32_t));
-    for (int j = 0; j < cms->width; j++) {
+    for (uint32_t j = 0; j < cms->width; j++) {
       cms->table[i][j] = 0;
     }
   }
@@ -95,7 +117,7 @@ void universal_hash_init(UniversalHash* hash, uint32_t prime, uint32_t width) {
 
 // initialize an array of UniversalHash
 void universal_hash_array_init(UniversalHash* hashFunctions, uint32_t prime, uint32_t width, uint32_t depth) {
-  for (int i = 0; i < depth; i++) {
+  for (uint32_t i = 0; i < depth; i++) {
     universal_hash_init(&hashFunctions[i], prime, width);
   }
 }
@@ -126,14 +148,14 @@ void cms_print(const CountMinSketch* cms) {
       "\t width: %d\n",
       cms->epsilon, cms->delta, cms->depth, cms->width);
   printf("cms table:\n");
-  for (int i = 0; i < cms->depth; i++) {
-    for (int j = 0; j < cms->width; j++) {
+  for (uint32_t i = 0; i < cms->depth; i++) {
+    for (uint32_t j = 0; j < cms->width; j++) {
       printf("%d ", cms->table[i][j]);
     }
     printf("\n");
   }
   printf("cms hashes:\n");
-  for (int i = 0; i < cms->depth; i++) {
+  for (uint32_t i = 0; i < cms->depth; i++) {
     universal_hash_print(&cms->hashFunctions[i]);
   }
 }
