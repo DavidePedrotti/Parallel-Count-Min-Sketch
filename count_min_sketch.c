@@ -1,61 +1,151 @@
 #include "count_min_sketch.h"
 
 // update per un item intero
-void cms_update_int(CountMinSketch* cms, int item, int c) {
-    cms->total += c;
-    for (unsigned int j = 0; j < cms->d; j++) {
-        unsigned int hashval = ((long)cms->hashes[j][0]*item + cms->hashes[j][1]) % LONG_PRIME % cms->w;
-        cms->C[j][hashval] += c;
-    }
+void cms_update_int(CountMinSketch* cms, uint32_t item, uint32_t c) {
+  cms->total += c;
+  for (uint32_t j = 0; j < cms->depth; j++) {
+    uint32_t hash_value = hash_val(item, &cms->hashFunctions[j]);
+    cms->table[j][hash_value] += c;
+  }
 }
 
 // Convertire una stringa in un numero intero
-unsigned int cms_hashstr(const char *str) {
-    unsigned long hash = 5381;
-    int c;
-    while ((c = *str++)) {
-        hash = ((hash << 5) + hash) + c;
-    }
-    return (unsigned int)(hash % LONG_PRIME); 
+uint32_t cms_hashstr(const char* str) {
+  unsigned long hash = 5381;
+  int c;
+  while ((c = *str++)) {
+    hash = ((hash << 5) + hash) + c;
+  }
+  return (uint32_t)(hash % LONG_PRIME);
 }
 
 // update per stringa
-void cms_update_str(CountMinSketch* cms, const char *str, int c) {
-    unsigned int hashval = cms_hashstr(str);
-    cms_update_int(cms, hashval, c);
+void cms_update_str(CountMinSketch* cms, const char* str, uint32_t c) {
+  uint32_t hashval = cms_hashstr(str);
+  cms_update_int(cms, hashval, c);
 }
 
-
 // point query per intero
-unsigned int cms_point_query_int(CountMinSketch* cms, int item) {
-    unsigned int min_count = UINT_MAX; // si parte dal massimo valore possibile
-    for (unsigned int j = 0; j < cms->d; j++) {
-        unsigned int hashval = ((long)cms->hashes[j][0]*item + cms->hashes[j][1]) % LONG_PRIME % cms->w;
-        if (cms->C[j][hashval] < min_count) {
-            min_count = cms->C[j][hashval];
-        }
+uint32_t cms_point_query_int(CountMinSketch* cms, uint32_t item) {
+  uint32_t min_count = UINT_MAX;  // si parte dal massimo valore possibile
+  for (uint32_t j = 0; j < cms->depth; j++) {
+    uint32_t hash_value = hash_val(item, &cms->hashFunctions[j]);
+    if (cms->table[j][hash_value] < min_count) {
+      min_count = cms->table[j][hash_value];
     }
-    return min_count;
+  }
+  return min_count;
 }
 
 // point query per stringa
-unsigned int cms_point_query_str(CountMinSketch* cms, const char *str) {
-    unsigned int hashval = cms_hashstr(str);
-    return cms_point_query_int(cms, hashval);
+uint32_t cms_point_query_str(CountMinSketch* cms, const char* str) {
+  uint32_t hashval = cms_hashstr(str);
+  return cms_point_query_int(cms, hashval);
 }
 
-unsigned int cms_range_query_int(CountMinSketch* cms, int start, int end) {
-    unsigned int total = 0;
-    for (int i = start; i <= end; i++) {
-        total += cms_point_query_int(cms, i);
-    }
-    return total;
+uint32_t cms_range_query_int(CountMinSketch* cms, int start, int end) {
+  uint32_t total = 0;
+  for (int i = start; i <= end; i++) {
+    total += cms_point_query_int(cms, i);
+  }
+  return total;
 }
 
-unsigned int cms_range_query_str(CountMinSketch* cms, const char **items, int n) {
-    unsigned int total = 0;
-    for (int i = 0; i < n; i++) {
-        total += cms_point_query_str(cms, items[i]);
+uint32_t cms_range_query_str(CountMinSketch* cms, const char** items, int n) {
+  uint32_t total = 0;
+  for (int i = 0; i < n; i++) {
+    total += cms_point_query_str(cms, items[i]);
+  }
+  return total;
+}
+
+// initialize cms creating a table and assigning a set of hash functions
+uint32_t cms_init(CountMinSketch* cms, double epsilon, double delta, uint32_t prime) {
+  if (epsilon <= 0.0 || epsilon >= 1.0) {
+    fprintf(stderr, "Error: epsilon value must be between 0 and 1 (exclusive)\n");
+    return -1;
+  }
+  if (delta <= 0.0 || delta >= 1.0) {
+    fprintf(stderr, "Error: delta value must be between 0 and 1 (exclusive)\n");
+    return -2;
+  }
+  cms->epsilon = epsilon;
+  cms->delta = delta;
+  cms->width = ceil(exp(1.0) / epsilon);
+  cms->depth = ceil(log(1 / delta));
+  cms->table = malloc(cms->depth * sizeof(uint32_t*));
+  for (int i = 0; i < cms->depth; i++) {
+    cms->table[i] = malloc(cms->width * sizeof(uint32_t));
+    for (int j = 0; j < cms->width; j++) {
+      cms->table[i][j] = 0;
     }
-    return total;
+  }
+  cms->hashFunctions = malloc(cms->depth * sizeof(UniversalHash));
+  universal_hash_array_init(cms->hashFunctions, prime, cms->width, cms->depth);
+  return 0;
+}
+
+// initialize UniversalHash
+void universal_hash_init(UniversalHash* hash, uint32_t prime, uint32_t width) {
+  hash->prime = prime;
+  hash->width = width;
+  hash->a = rand() % (prime - 1) + 1;
+  hash->b = rand() % prime;
+}
+
+// initialize an array of UniversalHash
+void universal_hash_array_init(UniversalHash* hashFunctions, uint32_t prime, uint32_t width, uint32_t depth) {
+  for (int i = 0; i < depth; i++) {
+    universal_hash_init(&hashFunctions[i], prime, width);
+  }
+}
+
+// compute the hash of a value
+uint32_t hash_val(uint32_t val, const UniversalHash* hash) {
+  return ((hash->a * val + hash->b) % hash->prime) % hash->width;
+}
+
+// pretty print UniversalHash
+void universal_hash_print(const UniversalHash* hash) {
+  printf(
+      "hash values: \n"
+      "\t a: %d\n"
+      "\t b: %d\n"
+      "\t prime: %d\n"
+      "\t width: %d\n",
+      hash->a, hash->b, hash->prime, hash->width);
+}
+
+// pretty print CountMinSketch
+void cms_print(const CountMinSketch* cms) {
+  printf(
+      "cms values: \n"
+      "\t epsilon: %f\n"
+      "\t delta: %f\n"
+      "\t depth: %d\n"
+      "\t width: %d\n",
+      cms->epsilon, cms->delta, cms->depth, cms->width);
+  printf("cms table:\n");
+  for (int i = 0; i < cms->depth; i++) {
+    for (int j = 0; j < cms->width; j++) {
+      printf("%d ", cms->table[i][j]);
+    }
+    printf("\n");
+  }
+  printf("cms hashes:\n");
+  for (int i = 0; i < cms->depth; i++) {
+    universal_hash_print(&cms->hashFunctions[i]);
+  }
+}
+
+int main(int argc, char* argv[]) {
+  srand(time(NULL));
+  CountMinSketch cms;
+  cms_init(&cms, EPSILON, DELTA, PRIME);
+  cms_print(&cms);
+  cms_update_int(&cms, 10, 2);
+  cms_print(&cms);
+  uint32_t res = cms_point_query_int(&cms,10);
+  printf("cms of 10: %d\n", res); // should be 2
+  return 0;
 }
