@@ -10,10 +10,10 @@
 
 #define min(a, b) (((a) < (b)) ? (a) : (b))
 #define max(a, b) (((a) > (b)) ? (a) : (b))
+#define EPSILON 0.1     // should set this to 0.01 but with 0.1 the matrix is smaller, which is better for debugging
+#define DELTA 0.1
+#define PRIME 2147483647  // Mersenne's prime
 #define LONG_PRIME 4294967311UL  // usato per migliorare la distribuzione degli hash
-const double EPSILON = 0.1;      // should set this to 0.01 but with 0.1 the matrix is smaller, which is better for debugging
-const double DELTA = 0.1;
-const uint32_t PRIME = 2147483647;  // Mersenne's prime
 
 typedef struct {
   uint32_t a;
@@ -59,6 +59,9 @@ uint32_t cms_inner_product(CountMinSketch* cms_a, CountMinSketch* cms_b);
 // initialize cms struct
 uint32_t cms_init(CountMinSketch* cms, double epsilon, double delta, uint32_t prime);
 
+// free dynamically allocated memory
+void cms_free(CountMinSketch* cms);
+
 // initialize a single hash function
 void universal_hash_init(UniversalHash* hash, uint32_t prime, uint32_t width);
 
@@ -69,7 +72,10 @@ void universal_hash_array_init(UniversalHash* hash, uint32_t prime, uint32_t wid
 uint32_t hash_val(uint32_t val, const UniversalHash* hash);
 
 // pretty print CMS
-void cms_print(const CountMinSketch* cms);
+void cms_print_values(const CountMinSketch* cms, const char* cms_name);
+void cms_print_table(const CountMinSketch* cms, const char* cms_name);
+void cms_print_hashes(const CountMinSketch* cms, const char* cms_name);
+void cms_print_all(const CountMinSketch* cms, const char* cms_name);
 
 // pretty print UniversalHash
 void universal_hash_print(const UniversalHash* hash);

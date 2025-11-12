@@ -62,18 +62,18 @@ uint32_t cms_range_query_str(CountMinSketch* cms, const char** items, int n) {
 // inner product query
 // computes row-wise dot product between two sketches, and returns the min of these row-wise dot products
 uint32_t cms_inner_product(CountMinSketch* cms_a, CountMinSketch* cms_b) {
-  if(cms_a->depth != cms_b->depth) {
+  if (cms_a->depth != cms_b->depth) {
     fprintf(stderr, "Error: the two sketches must have the same number of rows. Rows given: %d, %d\n", cms_a->depth, cms_b->depth);
     return -1;
   }
-  if(cms_a->width != cms_b->width) {
+  if (cms_a->width != cms_b->width) {
     fprintf(stderr, "Error: the two sketches must have the same number of columns. Columns given: %d, %d\n", cms_a->width, cms_b->width);
     return -2;
   }
   uint32_t result = UINT_MAX;
-  for(uint32_t i = 0; i < cms_a->depth; i++) {
+  for (uint32_t i = 0; i < cms_a->depth; i++) {
     uint32_t row_dot_product = 0;
-    for(uint32_t j = 0; j < cms_a->width; j++) {
+    for (uint32_t j = 0; j < cms_a->width; j++) {
       row_dot_product += (cms_a->table[i][j] * cms_b->table[i][j]);
     }
     result = min(result, row_dot_product);
@@ -105,6 +105,14 @@ uint32_t cms_init(CountMinSketch* cms, double epsilon, double delta, uint32_t pr
   cms->hashFunctions = malloc(cms->depth * sizeof(UniversalHash));
   universal_hash_array_init(cms->hashFunctions, prime, cms->width, cms->depth);
   return 0;
+}
+
+void cms_free(CountMinSketch* cms) {
+  for(uint32_t i; i < cms->depth; i++) {
+    free(cms->table[i]);
+  }
+  free(cms->table);
+  free(cms->hashFunctions);
 }
 
 // initialize UniversalHash
@@ -139,35 +147,70 @@ void universal_hash_print(const UniversalHash* hash) {
 }
 
 // pretty print CountMinSketch
-void cms_print(const CountMinSketch* cms) {
+void cms_print_all(const CountMinSketch* cms, const char* cms_name) {
+  cms_print_values(cms, cms_name);
+  cms_print_table(cms, cms_name);
+  cms_print_hashes(cms, cms_name);
+}
+
+void cms_print_values(const CountMinSketch* cms, const char* cms_name) {
+  printf("%s values:\n", cms_name);
   printf(
-      "cms values: \n"
-      "\t epsilon: %f\n"
-      "\t delta: %f\n"
-      "\t depth: %d\n"
-      "\t width: %d\n",
+      "\tepsilon: %f\n"
+      "\tdelta: %f\n"
+      "\tdepth: %d\n"
+      "\twidth: %d\n",
       cms->epsilon, cms->delta, cms->depth, cms->width);
-  printf("cms table:\n");
+}
+
+void cms_print_table(const CountMinSketch* cms, const char* cms_name) {
+  printf("%s table:\n", cms_name);
   for (uint32_t i = 0; i < cms->depth; i++) {
     for (uint32_t j = 0; j < cms->width; j++) {
       printf("%d ", cms->table[i][j]);
     }
     printf("\n");
   }
-  printf("cms hashes:\n");
+}
+
+void cms_print_hashes(const CountMinSketch* cms, const char* cms_name) {
+  printf("%s hashes:\n", cms_name);
   for (uint32_t i = 0; i < cms->depth; i++) {
     universal_hash_print(&cms->hashFunctions[i]);
   }
 }
 
+// function to test the inner product between two CMS
+// this function will be refactored once the code will be properly tested
+void test_inner_product() {
+  CountMinSketch cms_a;
+  cms_init(&cms_a, 0.1, 0.1, 2147483647);  // hardcoding them to set depth=3 and width=28
+  cms_a.table[0][0] = 1;
+  cms_a.table[0][27] = 1;
+  cms_a.table[1][0] = 2;
+  cms_a.table[1][27] = 2;
+  cms_a.table[2][0] = 3;
+  cms_a.table[2][27] = 3;
+  cms_print_table(&cms_a, "cms_a");
+
+  CountMinSketch cms_b;
+  cms_init(&cms_b, 0.1, 0.1, 2147483647);
+  cms_b.table[0][0] = 2;
+  cms_b.table[0][27] = 2;
+  cms_b.table[1][0] = 2;
+  cms_b.table[1][27] = 2;
+  cms_b.table[2][0] = 3;
+  cms_b.table[2][27] = 3;
+  cms_print_table(&cms_b, "cms_b");
+
+  uint32_t inner_product = cms_inner_product(&cms_a, &cms_b);
+  printf("Inner product query: %d\n", inner_product);  // should be 4
+
+  cms_free(&cms_a);
+  cms_free(&cms_b);
+}
+
 int main(int argc, char* argv[]) {
-  srand(time(NULL));
-  CountMinSketch cms;
-  cms_init(&cms, EPSILON, DELTA, PRIME);
-  cms_print(&cms);
-  cms_update_int(&cms, 10, 2);
-  cms_print(&cms);
-  uint32_t res = cms_point_query_int(&cms,10);
-  printf("cms of 10: %d\n", res); // should be 2
+  test_inner_product();
   return 0;
 }
