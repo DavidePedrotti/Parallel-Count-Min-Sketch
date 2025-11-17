@@ -108,7 +108,7 @@ uint32_t cms_init(CountMinSketch* cms, double epsilon, double delta, uint32_t pr
 }
 
 void cms_free(CountMinSketch* cms) {
-  for(uint32_t i; i < cms->depth; i++) {
+  for(uint32_t i = 0; i < cms->depth; i++) {
     free(cms->table[i]);
   }
   free(cms->table);
@@ -210,7 +210,36 @@ void test_inner_product() {
   cms_free(&cms_b);
 }
 
+
+void test_basic_update_query() {
+  printf("Start Test: Basic Update and Query \n");
+  uint32_t A_sum = 0;
+  uint32_t B_sum = 0;
+
+  CountMinSketch cms;
+  cms_init(&cms, 0.1, 0.1, 2147483647);
+
+  uint32_t item_a = 123;
+  cms_update_int(&cms, item_a, 10);
+  A_sum += 10;
+
+  uint32_t item_b = 456;
+  cms_update_int(&cms, item_b, 5);
+  B_sum += 5;
+
+  uint32_t stima_a = cms_point_query_int(&cms, item_a);
+  uint32_t stima_b = cms_point_query_int(&cms, item_b);
+  uint32_t stima_c = cms_point_query_int(&cms, 999); 
+
+  printf("Estimation for A (123): %u (expected: >= %u)\n", stima_a, A_sum);
+  printf("Estimation for B (456): %u (expected: >= %u)\n", stima_b, B_sum);
+  printf("Estimation for C (999): %u (expected: 0 or a small number)\n", stima_c);
+  
+  cms_free(&cms);
+}
+
+
 int main(int argc, char* argv[]) {
-  test_inner_product();
+  test_basic_update_query();
   return 0;
 }
