@@ -238,8 +238,38 @@ void test_basic_update_query() {
   cms_free(&cms);
 }
 
+void test_range_query() {
+  printf("Start Test: Range Query\n");
+  CountMinSketch cms;
+
+  cms_init(&cms, 0.1, 0.1, 2147483647);
+
+  int test_start = 100;
+  int test_end = 110;
+  uint32_t true_sum = 0;
+
+  cms_update_int(&cms, 100, 5); 
+  true_sum += 5;
+
+  cms_update_int(&cms, 105, 3); 
+  true_sum += 3;
+  
+  cms_update_int(&cms, 110, 2); 
+  true_sum += 2;
+
+  cms_update_int(&cms, 50, 10);  
+  cms_update_int(&cms, 200, 8); 
+
+  uint32_t range_stima = cms_range_query_int(&cms, test_start, test_end);
+
+  printf("Range 100-110: CMS Estimate: %u (expected: >= %u)\n", range_stima, true_sum);
+
+  cms_free(&cms);
+}
 
 int main(int argc, char* argv[]) {
   test_basic_update_query();
+  test_range_query();
+  test_inner_product();
   return 0;
 }
