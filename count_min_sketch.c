@@ -1,6 +1,6 @@
 #include "count_min_sketch.h"
 
-// update per un item intero
+// update for an item represented as an integer
 void cms_update_int(CountMinSketch* cms, uint32_t item, uint32_t c) {
   cms->total += c;
   for (uint32_t j = 0; j < cms->depth; j++) {
@@ -9,7 +9,7 @@ void cms_update_int(CountMinSketch* cms, uint32_t item, uint32_t c) {
   }
 }
 
-// Convertire una stringa in un numero intero
+// Convert a string to an integer
 uint32_t cms_hashstr(const char* str) {
   unsigned long hash = 5381;
   int c;
@@ -19,15 +19,15 @@ uint32_t cms_hashstr(const char* str) {
   return (uint32_t)(hash % LONG_PRIME);
 }
 
-// update per stringa
+// update for a string
 void cms_update_str(CountMinSketch* cms, const char* str, uint32_t c) {
   uint32_t hashval = cms_hashstr(str);
   cms_update_int(cms, hashval, c);
 }
 
-// point query per intero
+// point query for an integer
 uint32_t cms_point_query_int(CountMinSketch* cms, uint32_t item) {
-  uint32_t min_count = UINT_MAX;  // si parte dal massimo valore possibile
+  uint32_t min_count = UINT_MAX;  // start from the maximum possible value
   for (uint32_t j = 0; j < cms->depth; j++) {
     uint32_t hash_value = hash_val(item, &cms->hashFunctions[j]);
     if (cms->table[j][hash_value] < min_count) {
@@ -37,7 +37,7 @@ uint32_t cms_point_query_int(CountMinSketch* cms, uint32_t item) {
   return min_count;
 }
 
-// point query per stringa
+// point query for a string
 uint32_t cms_point_query_str(CountMinSketch* cms, const char* str) {
   uint32_t hashval = cms_hashstr(str);
   return cms_point_query_int(cms, hashval);
@@ -182,7 +182,7 @@ void cms_print_hashes(const CountMinSketch* cms, const char* cms_name) {
 
 // function to test the inner product between two CMS
 // this function will be refactored once the code will be properly tested
-void test_inner_product() {
+void test_inner_product_demo() {
   CountMinSketch cms_a;
   cms_init(&cms_a, 0.1, 0.1, 2147483647);  // hardcoding them to set depth=3 and width=28
   cms_a.table[0][0] = 1;
@@ -211,7 +211,7 @@ void test_inner_product() {
 }
 
 
-void test_basic_update_query() {
+void test_basic_update_query_demo() {
   printf("Start Test: Basic Update and Query \n");
   uint32_t A_sum = 0;
   uint32_t B_sum = 0;
@@ -238,7 +238,7 @@ void test_basic_update_query() {
   cms_free(&cms);
 }
 
-void test_range_query() {
+void test_range_query_demo() {
   printf("Start Test: Range Query\n");
   CountMinSketch cms;
 
@@ -267,9 +267,42 @@ void test_range_query() {
   cms_free(&cms);
 }
 
-int main(int argc, char* argv[]) {
-  test_basic_update_query();
-  test_range_query();
-  test_inner_product();
+
+void test_basic_update_query(CountMinSketch* cms, uint32_t true_A, uint32_t true_B) {
+  printf("Start Test: Basic Update and Query\n");
+
+  uint32_t stima_A = cms_point_query_int(cms, 123);
+  uint32_t stima_B = cms_point_query_int(cms, 456);
+
+  printf("Item 123 → estimation: %u, real: %u\n", stima_A, true_A);
+  printf("Item 456 → estimation: %u, real: %u\n", stima_B, true_B);
+
+  uint32_t stima_C = cms_point_query_int(cms, 999);
+  printf("Item 999 → estimation: %u (expected: 0 or a small number)\n", stima_C);
+}
+
+void test_range_query(CountMinSketch* cms, uint32_t true_range_sum) {
+  printf("Start Test: Range Query\n");
+
+  uint32_t stima = cms_range_query_int(cms, 100, 110);
+
+  printf("Range 100–110 → estimation: %u, real: %u\n", stima, true_range_sum);
+}
+
+void test_inner_product(CountMinSketch* cms_a, CountMinSketch* cms_b) {
+  printf("Start Test: Inner Product\n");
+
+  uint32_t result = cms_inner_product(cms_a, cms_b);
+
+  printf("Inner product = %u\n", result);
+}
+
+
+/*int main(int argc, char* argv[]) {
+  test_basic_update_query_demo();
+  test_range_query_demo();
+  test_inner_product_demo();
+
   return 0;
 }
+  */
