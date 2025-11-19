@@ -1,10 +1,12 @@
-CC = gcc
+CC = mpicc
 CFLAGS = -g -Wall -std=c99 -lm
 
-SRCS = count_min_sketch.c count_min_sketch.h
-TARGET = count_min_sketch # Executable name
+SRCS = count_min_sketch.c main.c
+TARGET = cms_mpi # Executable name
 
 # Build rules
+.PHONY: all $(TARGET)
+
 all: $(TARGET)
 
 $(TARGET): $(SRCS)

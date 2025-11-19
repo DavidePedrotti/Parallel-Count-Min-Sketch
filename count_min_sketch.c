@@ -91,6 +91,7 @@ uint32_t cms_init(CountMinSketch* cms, double epsilon, double delta, uint32_t pr
     fprintf(stderr, "Error: delta value must be between 0 and 1 (exclusive)\n");
     return -2;
   }
+  cms->total = 0;
   cms->epsilon = epsilon;
   cms->delta = delta;
   cms->width = ceil(exp(1.0) / epsilon);

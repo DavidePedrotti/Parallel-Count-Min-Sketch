@@ -10,9 +10,9 @@
 
 #define min(a, b) (((a) < (b)) ? (a) : (b))
 #define max(a, b) (((a) > (b)) ? (a) : (b))
-#define EPSILON 0.1     // should set this to 0.01 but with 0.1 the matrix is smaller, which is better for debugging
+#define EPSILON 0.01  // should set this to 0.01 but with 0.1 the matrix is smaller, which is better for debugging
 #define DELTA 0.1
-#define PRIME 2147483647  // Mersenne's prime
+#define PRIME 2147483647         // Mersenne's prime
 #define LONG_PRIME 4294967311UL  // used to improve the distribution of hashes
 
 typedef struct {
@@ -83,7 +83,6 @@ void universal_hash_print(const UniversalHash* hash);
 void test_basic_update_query(CountMinSketch* cms, uint32_t true_A, uint32_t true_B);
 void test_range_query(CountMinSketch* cms, uint32_t true_range_sum);
 void test_inner_product(CountMinSketch* cms_a, CountMinSketch* cms_b);
-
 
 void test_basic_update_query_demo();
 void test_range_query_demo();
