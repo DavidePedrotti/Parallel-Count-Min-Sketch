@@ -27,7 +27,7 @@ int main(int argc, char* argv[]) {
         MPI_Abort(MPI_COMM_WORLD, 1);
     }
 
-    MPI_Bcast(local_cms.hashFunctions,local_cms.depth * sizeof(UniversalHash), MPI_BYTE, 0, MPI_COMM_WORLD);
+    MPI_Bcast(local_cms.hashFunctions,local_cms.depth*sizeof(UniversalHash), MPI_BYTE, 0, MPI_COMM_WORLD);
 
     const char* FILENAME = "dataset.txt";
 
@@ -96,7 +96,7 @@ int main(int argc, char* argv[]) {
         line[idx] = '\0';
         if (idx > 0) local_items[read_count++] = (uint32_t)atoi(line);
 
-        // checks if we have reached the end
+        // It checks if we have reached the end
         MPI_File_get_position(fh, &curr_pos);
         if (curr_pos >= file_size) break;
     }
