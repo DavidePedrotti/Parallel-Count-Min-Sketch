@@ -8,4 +8,4 @@
 #PBS -q short_cpuQ
 
 module load mpich-3.2
-mpirun.actual -n 2 ./project/main
+mpirun.actual -n 2 ./project/main ./project/data/dataset_10000000.txt
