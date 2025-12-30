@@ -5,7 +5,7 @@
 
 #PBS -l walltime=0:05:00
 
-#PBS -q short_cpuQ
+#PBS -q short_HPC4DS
 
 module load mpich-3.2
 mpirun.actual -n 2 ./project/main ./project/data/dataset_10000000.txt

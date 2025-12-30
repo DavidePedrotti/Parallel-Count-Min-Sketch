@@ -10,7 +10,7 @@
 
 #define min(a, b) (((a) < (b)) ? (a) : (b))
 #define max(a, b) (((a) > (b)) ? (a) : (b))
-#define EPSILON 0.01  // should set this to 0.01 but with 0.1 the matrix is smaller, which is better for debugging
+#define EPSILON 0.001  // should set this to 0.01 but with 0.1 the matrix is smaller, which is better for debugging
 #define DELTA 0.1
 #define PRIME 2147483647         // Mersenne's prime
 #define LONG_PRIME 4294967311UL  // used to improve the distribution of hashes
