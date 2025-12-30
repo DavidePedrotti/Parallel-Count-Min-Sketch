@@ -96,6 +96,7 @@ uint32_t cms_init(CountMinSketch* cms, double epsilon, double delta, uint32_t pr
   cms->delta = delta;
   cms->width = ceil(exp(1.0) / epsilon);
   cms->depth = ceil(log(1 / delta));
+  printf("%d", cms->depth);
   cms->table = malloc(cms->depth * sizeof(uint32_t*));
   for (uint32_t i = 0; i < cms->depth; i++) {
     cms->table[i] = malloc(cms->width * sizeof(uint32_t));
