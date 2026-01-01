@@ -6,10 +6,72 @@
 
 #include "count_min_sketch.h"
 
+typedef struct {
+  uint32_t val;
+  uint32_t count;
+} RealCount;
+
 /*
- * MPI-only version
- * node 0 reads the dataset and then sends to each node its corresponding data
+ * Linear CMS version
  */
+
+// tests cms accuracy vs the ground truth
+void test_cms_accuracy(CountMinSketch* cms, RealCount* ground_truth, uint32_t n_values, uint32_t dataset_size) {
+  printf("\nCMS Accuracy Evaluation\n");
+  printf("Dataset size: %u\n", dataset_size);
+  printf("Number of unique values: %u\n", n_values);
+  cms_print_values(cms, "CMS");
+  printf("Theoretical error bound: epsilon*N = %0.0f\n\n", cms->epsilon * dataset_size);
+
+  uint64_t total_abs_error = 0;
+  uint64_t max_abs_error = 0;
+  uint64_t total_exact_matches = 0;
+  uint64_t total_within_bound = 0;
+  double error_bound = cms->epsilon * dataset_size;
+
+  for(uint32_t i = 0; i < n_values; i++) {
+    uint32_t val = ground_truth[i].val;
+    uint32_t count = ground_truth[i].count;
+    uint32_t estimate = cms_point_query_int(cms,val);
+    if(estimate < count) {
+      printf("Implementation error: cms estimate cannot be lower than the true count");
+      return 1;
+    }
+    uint64_t abs_error = (estimate > count) ? (estimate - count) : 0;
+    total_abs_error += abs_error;
+    if(abs_error > max_abs_error)
+      max_abs_error = abs_error;
+    if(estimate == count)
+      total_exact_matches++;
+    if(abs_error <= error_bound)
+      total_within_bound++;
+  }
+
+  printf("\nAccuracy Test Summary\n");
+  printf("Avg absolute error: %.2f\n", (double) total_abs_error / n_values);
+  printf("Max absolute error: %lu\n", max_abs_error);
+  printf("Exact matches: %u over %u items (%.2f%%)\n", total_exact_matches, n_values, (double) (total_exact_matches / n_values) * 100);
+  printf("Within error bound: %u over %u items (%.2f%%)\n\n", total_within_bound, n_values, (double) (total_within_bound / n_values) * 100);
+}
+
+// stores true item count into an array
+RealCount* load_count(const char* filename, uint32_t n_values) {
+  FILE* fp = fopen(filename, "r");
+  if(!fp)
+    return NULL;
+  
+  RealCount* arr = malloc(n_values * sizeof(RealCount));
+
+  char line[100];
+  uint32_t i = 0;
+  while(fgets(line, sizeof(line), fp)) {
+    sscanf(line, "%u %u", &arr[i].val, &arr[i].count);
+    i++;
+  }
+  fclose(fp);
+
+  return arr;
+}
 
 int main(int argc, char* argv[]) {
   MPI_Init(&argc, &argv);
