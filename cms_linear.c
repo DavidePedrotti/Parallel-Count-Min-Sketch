@@ -29,42 +29,42 @@ void test_cms_accuracy(CountMinSketch* cms, RealCount* ground_truth, uint32_t n_
   uint64_t total_within_bound = 0;
   double error_bound = cms->epsilon * dataset_size;
 
-  for(uint32_t i = 0; i < n_values; i++) {
+  for (uint32_t i = 0; i < n_values; i++) {
     uint32_t val = ground_truth[i].val;
     uint32_t count = ground_truth[i].count;
-    uint32_t estimate = cms_point_query_int(cms,val);
-    if(estimate < count) {
+    uint32_t estimate = cms_point_query_int(cms, val);
+    if (estimate < count) {
       printf("Implementation error: cms estimate cannot be lower than the true count");
       return 1;
     }
     uint64_t abs_error = (estimate > count) ? (estimate - count) : 0;
     total_abs_error += abs_error;
-    if(abs_error > max_abs_error)
+    if (abs_error > max_abs_error)
       max_abs_error = abs_error;
-    if(estimate == count)
+    if (estimate == count)
       total_exact_matches++;
-    if(abs_error <= error_bound)
+    if (abs_error <= error_bound)
       total_within_bound++;
   }
 
   printf("\nAccuracy Test Summary\n");
-  printf("Avg absolute error: %.2f\n", (double) total_abs_error / n_values);
+  printf("Avg absolute error: %.2f\n", (double)total_abs_error / n_values);
   printf("Max absolute error: %lu\n", max_abs_error);
-  printf("Exact matches: %u over %u items (%.2f%%)\n", total_exact_matches, n_values, (double) (total_exact_matches / n_values) * 100);
-  printf("Within error bound: %u over %u items (%.2f%%)\n\n", total_within_bound, n_values, (double) (total_within_bound / n_values) * 100);
+  printf("Exact matches: %u over %u items (%.2f%%)\n", total_exact_matches, n_values, (double)(total_exact_matches / n_values) * 100);
+  printf("Within error bound: %u over %u items (%.2f%%)\n\n", total_within_bound, n_values, (double)(total_within_bound / n_values) * 100);
 }
 
 // stores true item count into an array
 RealCount* load_count(const char* filename, uint32_t n_values) {
   FILE* fp = fopen(filename, "r");
-  if(!fp)
+  if (!fp)
     return NULL;
-  
+
   RealCount* arr = malloc(n_values * sizeof(RealCount));
 
   char line[100];
   uint32_t i = 0;
-  while(fgets(line, sizeof(line), fp)) {
+  while (fgets(line, sizeof(line), fp)) {
     sscanf(line, "%u %u", &arr[i].val, &arr[i].count);
     i++;
   }
@@ -124,8 +124,14 @@ int main(int argc, char* argv[]) {
     cms_update_int(&cms, all_items[i], 1);
   }
 
-  test_basic_update_query(&cms, true_A_sum, true_B_sum);
-  test_range_query(&cms, true_Range_sum);
+  char* total_count_filename[100];
+  strcpy(total_count_filename, "total_");
+  strcat(total_count_filename, FILENAME);
+  RealCount* count = load_count(total_count_filename, 10000);  // TODO: change this so that it's not hardcoded
+  test_cms_accuracy(&cms, &count, 10000, 50000);
+
+  // test_basic_update_query(&cms, true_A_sum, true_B_sum);
+  // test_range_query(&cms, true_Range_sum);
   cms_free(&cms);
 
   free(all_items);
