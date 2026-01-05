@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 
 #include "count_min_sketch.h"
@@ -35,7 +36,7 @@ void test_cms_accuracy(CountMinSketch* cms, RealCount* ground_truth, uint32_t n_
     uint32_t estimate = cms_point_query_int(cms, val);
     if (estimate < count) {
       printf("Implementation error: cms estimate cannot be lower than the true count");
-      return 1;
+      return;
     }
     uint64_t abs_error = (estimate > count) ? (estimate - count) : 0;
     total_abs_error += abs_error;
@@ -50,8 +51,8 @@ void test_cms_accuracy(CountMinSketch* cms, RealCount* ground_truth, uint32_t n_
   printf("\nAccuracy Test Summary\n");
   printf("Avg absolute error: %.2f\n", (double)total_abs_error / n_values);
   printf("Max absolute error: %lu\n", max_abs_error);
-  printf("Exact matches: %u over %u items (%.2f%%)\n", total_exact_matches, n_values, (double)(total_exact_matches / n_values) * 100);
-  printf("Within error bound: %u over %u items (%.2f%%)\n\n", total_within_bound, n_values, (double)(total_within_bound / n_values) * 100);
+  printf("Exact matches: %lu over %u items (%.2f%%)\n", total_exact_matches, n_values, (double)(total_exact_matches / n_values) * 100);
+  printf("Within error bound: %lu over %u items (%.2f%%)\n\n", total_within_bound, n_values, (double)(total_within_bound / n_values) * 100);
 }
 
 // stores true item count into an array
@@ -86,6 +87,7 @@ int main(int argc, char* argv[]) {
   }
 
   const char* FILENAME = argv[1];
+  const char* FOLDER = argv[2];
 
   uint32_t* all_items = NULL;
   uint64_t total_items = 0;
@@ -124,11 +126,20 @@ int main(int argc, char* argv[]) {
     cms_update_int(&cms, all_items[i], 1);
   }
 
-  char* total_count_filename[100];
-  strcpy(total_count_filename, "total_");
-  strcat(total_count_filename, FILENAME);
+  const char* base_filename = strrchr(FILENAME, '/');
+  base_filename = base_filename ? base_filename + 1 : FILENAME;  // base_filename+1 moves past '/'
+  char total_count_filename[100];
+  snprintf(total_count_filename, sizeof(total_count_filename), "%s/total_%s", FOLDER, base_filename);
   RealCount* count = load_count(total_count_filename, 10000);  // TODO: change this so that it's not hardcoded
-  test_cms_accuracy(&cms, &count, 10000, 50000);
+  if (!count) {
+    fprintf(stderr, "Error: cannot load the ground truth file %s\n", total_count_filename);
+    cms_free(&cms);
+    free(all_items);
+    MPI_Finalize();
+    return 4;
+  }
+
+  test_cms_accuracy(&cms, count, 10000, 50000);
 
   // test_basic_update_query(&cms, true_A_sum, true_B_sum);
   // test_range_query(&cms, true_Range_sum);
