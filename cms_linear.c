@@ -126,6 +126,8 @@ int main(int argc, char* argv[]) {
     cms_update_int(&cms, all_items[i], 1);
   }
 
+  double t_before_accuracy = MPI_Wtime();
+
   const char* base_filename = strrchr(FILENAME, '/');
   base_filename = base_filename ? base_filename + 1 : FILENAME;  // base_filename+1 moves past '/'
   char total_count_filename[100];
@@ -140,15 +142,18 @@ int main(int argc, char* argv[]) {
   }
 
   test_cms_accuracy(&cms, count, 10000, 50000);
+  double t_after_accuracy = MPI_Wtime();
 
-  // test_basic_update_query(&cms, true_A_sum, true_B_sum);
-  // test_range_query(&cms, true_Range_sum);
+  test_basic_update_query(&cms, true_A_sum, true_B_sum);
+  test_range_query(&cms, true_Range_sum);
   cms_free(&cms);
 
   free(all_items);
 
   double t_end = MPI_Wtime();
-  printf("Total time (all elements, V1 structure) = %f seconds\n", t_end - t_start);
+  printf("\nTotal time taken to update CMS: %.2f seconds\n", t_before_accuracy - t_start);
+  printf("Total time taken for accuracy test: %.2f seconds\n", t_after_accuracy - t_before_accuracy);
+  printf("Total execution time (including queries): %.2f seconds\n", t_end - t_start);
 
   MPI_Finalize();
   return 0;
