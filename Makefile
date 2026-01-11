@@ -1,7 +1,8 @@
 CC = mpicc
-CFLAGS = -g -Wall -std=c99 -lm
+CFLAGS = -g -Wall -std=c99
+LDFLAGS = -lm
 
-SRCS = count_min_sketch.c mainV2.c
+SRCS = count_min_sketch.c cms_linear.c
 # SRCS = count_min_sketch.c mainV2.c
 
 TARGET = main # Executable name
@@ -12,4 +13,4 @@ TARGET = main # Executable name
 all: $(TARGET)
 
 $(TARGET): $(SRCS)
-	$(CC) $(CFLAGS) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)

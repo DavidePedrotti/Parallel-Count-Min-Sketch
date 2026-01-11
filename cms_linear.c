@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 
 #include "count_min_sketch.h"
@@ -24,6 +25,7 @@ int main(int argc, char* argv[]) {
   }
 
   const char* FILENAME = argv[1];
+  const char* FOLDER = argv[2];
 
   uint32_t* all_items = NULL;
   uint64_t total_items = 0;
@@ -62,20 +64,34 @@ int main(int argc, char* argv[]) {
     cms_update_int(&cms, all_items[i], 1);
   }
 
-  char* total_count_filename[100];
-  strcpy(total_count_filename, "total_");
-  strcat(total_count_filename, FILENAME);
-  RealCount* count = load_count(total_count_filename, 10000);  // TODO: change this so that it's not hardcoded
-  test_cms_accuracy(&cms, &count, 10000, 50000);
+  double t_before_accuracy = MPI_Wtime();
 
-  // test_basic_update_query(&cms, true_A_sum, true_B_sum);
-  // test_range_query(&cms, true_Range_sum);
+  const char* base_filename = strrchr(FILENAME, '/');
+  base_filename = base_filename ? base_filename + 1 : FILENAME;  // base_filename+1 moves past '/'
+  char total_count_filename[100];
+  snprintf(total_count_filename, sizeof(total_count_filename), "%s/total_%s", FOLDER, base_filename);
+  RealCount* count = load_count(total_count_filename, 10000);  // TODO: change this so that it's not hardcoded
+  if (!count) {
+    fprintf(stderr, "Error: cannot load the ground truth file %s\n", total_count_filename);
+    cms_free(&cms);
+    free(all_items);
+    MPI_Finalize();
+    return 4;
+  }
+
+  test_cms_accuracy(&cms, count, 10000, 50000);
+  double t_after_accuracy = MPI_Wtime();
+
+  test_basic_update_query(&cms, true_A_sum, true_B_sum);
+  test_range_query(&cms, true_Range_sum);
   cms_free(&cms);
 
   free(all_items);
 
   double t_end = MPI_Wtime();
-  printf("Total time (all elements, V1 structure) = %f seconds\n", t_end - t_start);
+  printf("\nTotal time taken to update CMS: %.2f seconds\n", t_before_accuracy - t_start);
+  printf("Total time taken for accuracy test: %.2f seconds\n", t_after_accuracy - t_before_accuracy);
+  printf("Total execution time (including queries): %.2f seconds\n", t_end - t_start);
 
   MPI_Finalize();
   return 0;
