@@ -110,7 +110,7 @@ uint32_t cms_init(CountMinSketch* cms, double epsilon, double delta, uint32_t pr
 }
 
 void cms_free(CountMinSketch* cms) {
-  for(uint32_t i = 0; i < cms->depth; i++) {
+  for (uint32_t i = 0; i < cms->depth; i++) {
     free(cms->table[i]);
   }
   free(cms->table);
@@ -182,6 +182,64 @@ void cms_print_hashes(const CountMinSketch* cms, const char* cms_name) {
   }
 }
 
+// stores true item count into an array
+RealCount* load_count(const char* filename, uint32_t n_values) {
+  FILE* fp = fopen(filename, "r");
+  if (!fp)
+    return NULL;
+
+  RealCount* arr = malloc(n_values * sizeof(RealCount));
+
+  char line[100];
+  uint32_t i = 0;
+  while (fgets(line, sizeof(line), fp)) {
+    sscanf(line, "%u %u", &arr[i].val, &arr[i].count);
+    i++;
+  }
+  fclose(fp);
+
+  return arr;
+}
+
+// tests cms accuracy vs the ground truth
+void test_cms_accuracy(CountMinSketch* cms, RealCount* ground_truth, uint32_t n_values, uint32_t dataset_size) {
+  printf("\nCMS Accuracy Evaluation\n");
+  printf("Dataset size: %u\n", dataset_size);
+  printf("Number of unique values: %u\n", n_values);
+  cms_print_values(cms, "CMS");
+  printf("Theoretical error bound: epsilon*N = %0.0f\n\n", cms->epsilon * dataset_size);
+
+  uint64_t total_abs_error = 0;
+  uint64_t max_abs_error = 0;
+  uint64_t total_exact_matches = 0;
+  uint64_t total_within_bound = 0;
+  double error_bound = cms->epsilon * dataset_size;
+
+  for (uint32_t i = 0; i < n_values; i++) {
+    uint32_t val = ground_truth[i].val;
+    uint32_t count = ground_truth[i].count;
+    uint32_t estimate = cms_point_query_int(cms, val);
+    if (estimate < count) {
+      printf("Implementation error: cms estimate cannot be lower than the true count");
+      return 1;
+    }
+    uint64_t abs_error = (estimate > count) ? (estimate - count) : 0;
+    total_abs_error += abs_error;
+    if (abs_error > max_abs_error)
+      max_abs_error = abs_error;
+    if (estimate == count)
+      total_exact_matches++;
+    if (abs_error <= error_bound)
+      total_within_bound++;
+  }
+
+  printf("\nAccuracy Test Summary\n");
+  printf("Avg absolute error: %.2f\n", (double)total_abs_error / n_values);
+  printf("Max absolute error: %lu\n", max_abs_error);
+  printf("Exact matches: %u over %u items (%.2f%%)\n", total_exact_matches, n_values, (double)(total_exact_matches / n_values) * 100);
+  printf("Within error bound: %u over %u items (%.2f%%)\n\n", total_within_bound, n_values, (double)(total_within_bound / n_values) * 100);
+}
+
 // function to test the inner product between two CMS
 // this function will be refactored once the code will be properly tested
 void test_inner_product_demo() {
@@ -212,7 +270,6 @@ void test_inner_product_demo() {
   cms_free(&cms_b);
 }
 
-
 void test_basic_update_query_demo() {
   printf("Start Test: Basic Update and Query \n");
   uint32_t A_sum = 0;
@@ -231,12 +288,12 @@ void test_basic_update_query_demo() {
 
   uint32_t stima_a = cms_point_query_int(&cms, item_a);
   uint32_t stima_b = cms_point_query_int(&cms, item_b);
-  uint32_t stima_c = cms_point_query_int(&cms, 999); 
+  uint32_t stima_c = cms_point_query_int(&cms, 999);
 
   printf("Estimation for A (123): %u (expected: >= %u)\n", stima_a, A_sum);
   printf("Estimation for B (456): %u (expected: >= %u)\n", stima_b, B_sum);
   printf("Estimation for C (999): %u (expected: 0 or a small number)\n", stima_c);
-  
+
   cms_free(&cms);
 }
 
@@ -250,17 +307,17 @@ void test_range_query_demo() {
   int test_end = 110;
   uint32_t true_sum = 0;
 
-  cms_update_int(&cms, 100, 5); 
+  cms_update_int(&cms, 100, 5);
   true_sum += 5;
 
-  cms_update_int(&cms, 105, 3); 
+  cms_update_int(&cms, 105, 3);
   true_sum += 3;
-  
-  cms_update_int(&cms, 110, 2); 
+
+  cms_update_int(&cms, 110, 2);
   true_sum += 2;
 
-  cms_update_int(&cms, 50, 10);  
-  cms_update_int(&cms, 200, 8); 
+  cms_update_int(&cms, 50, 10);
+  cms_update_int(&cms, 200, 8);
 
   uint32_t range_stima = cms_range_query_int(&cms, test_start, test_end);
 
@@ -268,7 +325,6 @@ void test_range_query_demo() {
 
   cms_free(&cms);
 }
-
 
 void test_basic_update_query(CountMinSketch* cms, uint32_t true_A, uint32_t true_B) {
   printf("Start Test: Basic Update and Query\n");
@@ -298,7 +354,6 @@ void test_inner_product(CountMinSketch* cms_a, CountMinSketch* cms_b) {
 
   printf("Inner product = %u\n", result);
 }
-
 
 /*int main(int argc, char* argv[]) {
   test_basic_update_query_demo();

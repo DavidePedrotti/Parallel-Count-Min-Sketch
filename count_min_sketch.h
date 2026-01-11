@@ -32,6 +32,12 @@ typedef struct {
   UniversalHash* hashFunctions;
 } CountMinSketch;
 
+// struct used to store the real count of items
+typedef struct {
+  uint32_t val;
+  uint32_t count;
+} RealCount;
+
 // update for an item represented as an integer
 void cms_update_int(CountMinSketch* cms, uint32_t item, uint32_t c);
 
@@ -79,6 +85,11 @@ void cms_print_all(const CountMinSketch* cms, const char* cms_name);
 
 // pretty print UniversalHash
 void universal_hash_print(const UniversalHash* hash);
+
+// store the real count of items into a RealCount*
+RealCount* load_count(const char* filename, uint32_t n_values);
+
+void test_cms_accuracy(CountMinSketch* cms, RealCount* ground_truth, uint32_t n_values, uint32_t dataset_size);
 
 void test_basic_update_query(CountMinSketch* cms, uint32_t true_A, uint32_t true_B);
 void test_range_query(CountMinSketch* cms, uint32_t true_range_sum);
