@@ -89,7 +89,7 @@ void universal_hash_print(const UniversalHash* hash);
 // store the real count of items into a RealCount*
 RealCount* load_count(const char* filename, uint32_t n_values);
 
-void test_cms_accuracy(CountMinSketch* cms, RealCount* ground_truth, uint32_t n_values, uint32_t dataset_size);
+int test_cms_accuracy(CountMinSketch* cms, RealCount* ground_truth, uint32_t n_values, uint32_t dataset_size);
 
 void test_basic_update_query(CountMinSketch* cms, uint32_t true_A, uint32_t true_B);
 void test_range_query(CountMinSketch* cms, uint32_t true_range_sum);

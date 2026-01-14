@@ -7,7 +7,6 @@
 
 #include "count_min_sketch.h"
 
-
 /*
  * Linear CMS version
  */

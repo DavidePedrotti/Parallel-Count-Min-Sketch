@@ -202,7 +202,7 @@ RealCount* load_count(const char* filename, uint32_t n_values) {
 }
 
 // tests cms accuracy vs the ground truth
-void test_cms_accuracy(CountMinSketch* cms, RealCount* ground_truth, uint32_t n_values, uint32_t dataset_size) {
+int test_cms_accuracy(CountMinSketch* cms, RealCount* ground_truth, uint32_t n_values, uint32_t dataset_size) {
   printf("\nCMS Accuracy Evaluation\n");
   printf("Dataset size: %u\n", dataset_size);
   printf("Number of unique values: %u\n", n_values);
@@ -235,9 +235,10 @@ void test_cms_accuracy(CountMinSketch* cms, RealCount* ground_truth, uint32_t n_
 
   printf("\nAccuracy Test Summary\n");
   printf("Avg absolute error: %.2f\n", (double)total_abs_error / n_values);
-  printf("Max absolute error: %lu\n", max_abs_error);
-  printf("Exact matches: %u over %u items (%.2f%%)\n", total_exact_matches, n_values, (double)(total_exact_matches / n_values) * 100);
-  printf("Within error bound: %u over %u items (%.2f%%)\n\n", total_within_bound, n_values, (double)(total_within_bound / n_values) * 100);
+  printf("Max absolute error: %llu\n", max_abs_error);
+  printf("Exact matches: %llu over %u items (%.2f%%)\n", total_exact_matches, n_values, (double)(total_exact_matches / n_values) * 100);
+  printf("Within error bound: %llu over %u items (%.2f%%)\n\n", total_within_bound, n_values, (double)(total_within_bound / n_values) * 100);
+  return 0;
 }
 
 // function to test the inner product between two CMS
