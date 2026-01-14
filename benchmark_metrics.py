@@ -84,10 +84,4 @@ if len(results) >= 2:
         print(f"  {r['processes']} cores: {r['efficiency']*100:.1f}%")
     
     print(f"Variation: {eff_variation*100:.1f}pp")
-    
-    if eff_variation < 0.1:
-        print("→ GOOD strong scalability")
-    elif eff_variation < 0.2:
-        print("→ MODERATE strong scalability")
-    else:
-        print("→ POOR strong scalability")
+   
