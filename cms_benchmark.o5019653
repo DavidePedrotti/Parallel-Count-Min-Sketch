@@ -1,0 +1,107 @@
+Using Python: python3
+Python 3.9.12
+ COUNT-MIN SKETCH PERFORMANCE ANALYSIS
+Running sequential baseline
+Sequential time (T1): 0.490s
+  Point query: 0.000006s
+  Range query: 0.000003s
+  Inner product: 0.000024s
+
+MAIN.C (MPI Basic Implementation)
+Running main.c with 1 processes
+Time with 1 processes: 0.503s
+Running main.c with 2 processes
+Time with 2 processes: 0.418s
+Running main.c with 4 processes
+Time with 4 processes: 0.365s
+Running main.c with 8 processes
+Time with 8 processes: 0.342s
+MAINV2.C (MPI-I/O Implementation)
+Running mainV2.c with 1 processes
+Time with 1 processes: 0.851s
+Running mainV2.c with 2 processes
+Time with 2 processes: 0.462s
+Running mainV2.c with 4 processes
+Time with 4 processes: 0.360s
+Running mainV2.c with 8 processes
+Time with 8 processes: 0.329s
+MAINV3.C (MPI-I/O Optimized Implementation)
+Running mainV3.c with 1 processes
+Time with 1 processes: 0.680s
+Running mainV3.c with 2 processes
+Time with 2 processes: 0.544s
+Running mainV3.c with 4 processes
+Time with 4 processes: 0.469s
+Running mainV3.c with 8 processes
+Time with 8 processes: 0.442s
+   PERFORMANCE METRICS - MAIN.C
+│ Processes │ Time (s) │ Speedup  │ Efficiency │
+│     1     │   0.503  │   0.97x  │    97.4%   │
+│     2     │   0.418  │   1.17x  │    58.6%   │
+│     4     │   0.365  │   1.34x  │    33.6%   │
+│     8     │   0.342  │   1.43x  │    17.9%   │
+   PERFORMANCE METRICS - MAINV2.C
+│ Processes │ Time (s) │ Speedup  │ Efficiency │
+│     1     │   0.851  │   0.58x  │    57.6%   │
+│     2     │   0.462  │   1.06x  │    53.0%   │
+│     4     │   0.360  │   1.36x  │    34.0%   │
+│     8     │   0.329  │   1.49x  │    18.6%   │
+   PERFORMANCE METRICS - MAINV3.C
+│ Processes │ Time (s) │ Speedup  │ Efficiency │
+│     1     │   0.680  │   0.72x  │    72.0%   │
+│     2     │   0.544  │   0.90x  │    45.1%   │
+│     4     │   0.469  │   1.04x  │    26.1%   │
+│     8     │   0.442  │   1.11x  │    13.9%   │
+   COMPARATIVE ANALYSIS
+│ Processes │  main.c  │ mainV2.c │ mainV3.c │
+│     1     │  0.503s │  0.851s │  0.680s │
+│     2     │  0.418s │  0.462s │  0.544s │
+│     4     │  0.365s │  0.360s │  0.469s │
+│     8     │  0.342s │  0.329s │  0.442s │
+SCALABILITY ANALYSIS
+
+STRONG SCALABILITY - MAIN.C
+  1 cores: 97.4%
+  2 cores: 58.6%
+  4 cores: 33.6%
+  8 cores: 17.9%
+Variation: 79.5pp
+
+STRONG SCALABILITY - MAINV2.C
+  1 cores: 57.6%
+  2 cores: 53.0%
+  4 cores: 34.0%
+  8 cores: 18.6%
+Variation: 39.0pp
+
+STRONG SCALABILITY - MAINV3.C
+  1 cores: 72.0%
+  2 cores: 45.1%
+  4 cores: 26.1%
+  8 cores: 13.9%
+Variation: 58.2pp
+
+============================================================
+   QUERY PERFORMANCE COMPARISON
+============================================================
+
+--- POINT QUERY TIME (seconds) ---
+│ Processes │  Baseline │  main.c  │ mainV2.c │ mainV3.c │
+│     1     │ 0.000006 │ 0.000044 │ 0.000009 │ 0.000028 │
+│     2     │    -      │ 0.000012 │ 0.000011 │ 0.000026 │
+│     4     │    -      │ 0.000010 │ 0.000007 │ 0.000029 │
+│     8     │    -      │ 0.000012 │ 0.000008 │ 0.000028 │
+
+--- RANGE QUERY TIME (seconds) ---
+│ Processes │  Baseline │  main.c  │ mainV2.c │ mainV3.c │
+│     1     │ 0.000003 │ 0.000003 │ 0.000003 │ 0.000004 │
+│     2     │    -      │ 0.000003 │ 0.000003 │ 0.000005 │
+│     4     │    -      │ 0.000004 │ 0.000003 │ 0.000005 │
+│     8     │    -      │ 0.000003 │ 0.000003 │ 0.000004 │
+
+--- INNER PRODUCT TIME (seconds) ---
+│ Processes │  Baseline │  main.c  │ mainV2.c │ mainV3.c │
+│     1     │ 0.000024 │ 0.000025 │ 0.000025 │ 0.000028 │
+│     2     │    -      │ 0.000025 │ 0.000025 │ 0.000029 │
+│     4     │    -      │ 0.000031 │ 0.000025 │ 0.000027 │
+│     8     │    -      │ 0.000025 │ 0.000027 │ 0.000029 │

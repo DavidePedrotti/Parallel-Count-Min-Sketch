@@ -180,10 +180,30 @@ int main(int argc, char* argv[]) {
   MPI_Barrier(MPI_COMM_WORLD);
   double t_reduce_end = MPI_Wtime();
 
-    // TESTS (rank 0)
+  // TESTS (rank 0)
   if (my_rank == 0) {
+    // Point Query Test
+    double t_point_start = MPI_Wtime();
     test_basic_update_query(&global_cms, true_123, true_456);
+    double t_point_end = MPI_Wtime();
+    
+    // Range Query Test
+    double t_range_start = MPI_Wtime();
     test_range_query(&global_cms, true_range);
+    double t_range_end = MPI_Wtime();
+    
+    // Inner Product Test
+    double t_inner_start = MPI_Wtime();
+    uint64_t inner_prod = cms_inner_product(&global_cms, &global_cms);
+    double t_inner_end = MPI_Wtime();
+    printf("\nInner Product Test\n");
+    printf("Inner product (self): %lu\n", (unsigned long)inner_prod);
+    
+    printf("\nQuery Timing:\n");
+    printf("Point query time:  %f s\n", t_point_end - t_point_start);
+    printf("Range query time:  %f s\n", t_range_end - t_range_start);
+    printf("Inner product time: %f s\n", t_inner_end - t_inner_start);
+    
     cms_free(&global_cms);
   }
 
