@@ -78,13 +78,20 @@ int main(int argc, char* argv[]) {
     }
   }
 
-  MPI_Offset my_chunk_size = my_end - my_start + 1;
-  char* buffer = malloc(my_chunk_size + 1);
-  if (!buffer) MPI_Abort(MPI_COMM_WORLD, 99);
+MPI_Offset my_chunk_size = my_end - my_start + 1;
+char* buffer = malloc(my_chunk_size + 1);
+if (!buffer) MPI_Abort(MPI_COMM_WORLD, 99);
 
-  MPI_File_read_at_all(fh, my_start, buffer, my_chunk_size, MPI_CHAR, MPI_STATUS_IGNORE);
-  buffer[my_chunk_size] = '\0';
-  MPI_File_close(&fh);
+MPI_File_read_at_all(fh, my_start, buffer, my_chunk_size, MPI_CHAR, MPI_STATUS_IGNORE);
+buffer[my_chunk_size] = '\0';
+if (my_rank != comm_sz - 1) {
+    char* last_nl = strrchr(buffer, '\n');
+    if (last_nl != NULL) {
+        *(last_nl + 1) = '\0';   
+    } else {
+        buffer[0] = '\0';      
+    }
+}
 
   // Conteggio linee nel chunk
   int line_count = 0;
