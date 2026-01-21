@@ -1,0 +1,4 @@
+  File "benchmark_metrics.py", line 28
+    cmd = f"mpirun -np 1 ./cms_linear {DATASET} {FOLDER}"
+                                                        ^
+SyntaxError: invalid syntax

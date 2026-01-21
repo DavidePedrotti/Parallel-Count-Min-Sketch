@@ -1,4 +1,5 @@
 #include "count_min_sketch.h"
+#include <inttypes.h>
 
 // update for an item represented as an integer
 void cms_update_int(CountMinSketch* cms, uint32_t item, uint32_t c) {
@@ -235,9 +236,9 @@ int test_cms_accuracy(CountMinSketch* cms, RealCount* ground_truth, uint32_t n_v
 
   printf("\nAccuracy Test Summary\n");
   printf("Avg absolute error: %.2f\n", (double)total_abs_error / n_values);
-  printf("Max absolute error: %llu\n", max_abs_error);
-  printf("Exact matches: %llu over %u items (%.2f%%)\n", total_exact_matches, n_values, (double)(total_exact_matches / n_values) * 100);
-  printf("Within error bound: %llu over %u items (%.2f%%)\n\n", total_within_bound, n_values, (double)(total_within_bound / n_values) * 100);
+  printf("Max absolute error: %" PRIu64 "\n", max_abs_error);
+  printf("Exact matches: %" PRIu64 " over %u items (%.2f%%)\n", total_exact_matches, n_values, (double)(total_exact_matches / n_values) * 100);
+  printf("Within error bound: %" PRIu64 " over %u items (%.2f%%)\n\n", total_within_bound, n_values, (double)(total_within_bound / n_values) * 100);
   return 0;
 }
 
@@ -364,3 +365,4 @@ void test_inner_product(CountMinSketch* cms_a, CountMinSketch* cms_b) {
   return 0;
 }
   */
+

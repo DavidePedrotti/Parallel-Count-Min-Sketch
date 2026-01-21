@@ -25,8 +25,9 @@ print(f"Dataset: 5M elements\n")
 
 # Run sequential baseline
 print("Running sequential baseline")
-cmd = f"mpirun -np 1 ./cms_linear {DATASET} {FOLDER}"
+cmd = f"mpirun.actual -np 1 ./cms_linear {DATASET} {FOLDER}"
 output = run_command(cmd)
+print("Output:", output[:200])  # Debug: print first 200 chars
 T1 = extract_time(output, r"Total time taken to update CMS: ([\d.]+) seconds")
 
 if T1 is None:
@@ -45,7 +46,7 @@ print("MAIN.C (MPI Basic Implementation)")
 
 for P in processes:
     print(f"Running main.c with {P} processes")
-    cmd = f"mpirun -np {P} ./main {DATASET}"
+    cmd = f"mpirun.actual -np {P} ./main {DATASET}"
     output = run_command(cmd)
     T = extract_time(output, r"Total time \(all elements, V1 structure\) = ([\d.]+) seconds")
     
@@ -70,13 +71,19 @@ print("MAINV2.C (MPI-I/O Implementation)")
  
 for P in processes:
     print(f"Running mainV2.c with {P} processes")
-    cmd = f"mpirun -np {P} ./mainV2 {DATASET}"
+    cmd = f"mpirun.actual -np {P} ./mainV2 {DATASET}"
     output = run_command(cmd)
     T = extract_time(output, r"Total time V2 full chunk: ([\d.]+) seconds")
     
     if T is None:
-        print(f"  ERROR: Could not extract time for {P} processes")
-        continue
+        # Try alternative pattern
+        T = extract_time(output, r"Total time:[\s]+([\d.]+) s")
+        if T is None:
+            T = extract_time(output, r"Total time taken to update CMS: ([\d.]+) seconds")
+        if T is None:
+            print(f"  ERROR: Could not extract time for {P} processes")
+            print(f"  Last 400 chars of output:\n{output[-400:]}")
+            continue
     
     # Calculate metrics
     speedup = T1 / T if T > 0 else 0
@@ -95,7 +102,7 @@ print("MAINV3.C (MPI-I/O Optimized Implementation)")
 
 for P in processes:
     print(f"Running mainV3.c with {P} processes")
-    cmd = f"mpirun -np {P} ./mainV3 {DATASET}"
+    cmd = f"mpirun.actual -np {P} ./mainV3 {DATASET}"
     output = run_command(cmd)
     T = extract_time(output, r"Total time V3: ([\d.]+) seconds")
     
