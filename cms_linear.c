@@ -69,7 +69,18 @@ int main(int argc, char* argv[]) {
   base_filename = base_filename ? base_filename + 1 : FILENAME;  // base_filename+1 moves past '/'
   char total_count_filename[100];
   snprintf(total_count_filename, sizeof(total_count_filename), "%s/total_%s", FOLDER, base_filename);
-  RealCount* count = load_count(total_count_filename, 10000);  // TODO: change this so that it's not hardcoded
+  
+  // Count unique values from ground truth file
+  uint32_t n_unique = count_lines(total_count_filename);
+  if (n_unique == 0) {
+    fprintf(stderr, "Error: cannot load the ground truth file %s\n", total_count_filename);
+    cms_free(&cms);
+    free(all_items);
+    MPI_Finalize();
+    return 4;
+  }
+  
+  RealCount* count = load_count(total_count_filename, n_unique);
   if (!count) {
     fprintf(stderr, "Error: cannot load the ground truth file %s\n", total_count_filename);
     cms_free(&cms);
@@ -78,7 +89,7 @@ int main(int argc, char* argv[]) {
     return 4;
   }
 
-  test_cms_accuracy(&cms, count, 10000, 50000);
+  test_cms_accuracy(&cms, count, n_unique, total_items);
   double t_after_accuracy = MPI_Wtime();
 
   // Point Query Test

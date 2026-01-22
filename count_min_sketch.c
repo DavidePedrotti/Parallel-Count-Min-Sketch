@@ -357,6 +357,21 @@ void test_inner_product(CountMinSketch* cms_a, CountMinSketch* cms_b) {
   printf("Inner product = %u\n", result);
 }
 
+// Count lines in ground truth file
+uint32_t count_lines(const char* filename) {
+  FILE* fp = fopen(filename, "r");
+  if (!fp)
+    return 0;
+  
+  uint32_t count = 0;
+  char line[100];
+  while (fgets(line, sizeof(line), fp)) {
+    count++;
+  }
+  fclose(fp);
+  return count;
+}
+
 /*int main(int argc, char* argv[]) {
   test_basic_update_query_demo();
   test_range_query_demo();

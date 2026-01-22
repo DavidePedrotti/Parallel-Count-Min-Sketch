@@ -46,27 +46,6 @@ int main(int argc, char* argv[]) {
 
   const char* FILENAME = argv[1];
 
-  uint32_t true_123 = 0, true_456 = 0, true_range = 0;
-
-  //   GROUND TRUTH (rank 0)
-  if (my_rank == 0) {
-    FILE* fp = fopen(FILENAME, "r");
-    if (!fp) {
-      fprintf(stderr, "Rank 0: cannot open file\n");
-      MPI_Abort(MPI_COMM_WORLD, 2);
-    }
-
-    char line[MAX_LINE_LEN];
-    while (fgets(line, MAX_LINE_LEN, fp)) {
-      uint32_t v = (uint32_t)atoi(line);
-      if (v == 123) true_123++;
-      if (v == 456) true_456++;
-      if (v >= 100 && v <= 110) true_range++;
-    }
-    fclose(fp);
-  }
-
-
   // MPI-I/O + PARSING
   MPI_Barrier(MPI_COMM_WORLD);
   double t_io_start = MPI_Wtime();
@@ -136,12 +115,20 @@ int main(int argc, char* argv[]) {
   MPI_Barrier(MPI_COMM_WORLD);
   double t_io_end = MPI_Wtime();
 
-    // CMS UPDATE
+  // CMS UPDATE and calculate local ground truth
   MPI_Barrier(MPI_COMM_WORLD);
   double t_update_start = MPI_Wtime();
 
-  for (int i = 0; i < idx; i++)
-    cms_update_int(&local_cms, local_items[i], 1);
+  uint32_t local_123 = 0, local_456 = 0, local_range = 0;
+  for (int i = 0; i < idx; i++) {
+    uint32_t val = local_items[i];
+    cms_update_int(&local_cms, val, 1);
+    
+    // Count ground truth values
+    if (val == 123) local_123++;
+    if (val == 456) local_456++;
+    if (val >= 100 && val <= 110) local_range++;
+  }
 
   free(local_items);
 
@@ -176,6 +163,12 @@ int main(int argc, char* argv[]) {
              (my_rank == 0 ? &global_cms.total : NULL),
              1, MPI_UINT32_T, MPI_SUM,
              0, MPI_COMM_WORLD);
+
+  // Reduce ground truth counts
+  uint32_t true_123 = 0, true_456 = 0, true_range = 0;
+  MPI_Reduce(&local_123, &true_123, 1, MPI_UINT32_T, MPI_SUM, 0, MPI_COMM_WORLD);
+  MPI_Reduce(&local_456, &true_456, 1, MPI_UINT32_T, MPI_SUM, 0, MPI_COMM_WORLD);
+  MPI_Reduce(&local_range, &true_range, 1, MPI_UINT32_T, MPI_SUM, 0, MPI_COMM_WORLD);
 
   MPI_Barrier(MPI_COMM_WORLD);
   double t_reduce_end = MPI_Wtime();

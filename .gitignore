@@ -2,3 +2,4 @@
 main
 output_*
 error_*
+scripts/*.txt

@@ -99,4 +99,6 @@ void test_basic_update_query_demo();
 void test_range_query_demo();
 void test_inner_product_demo();
 
+uint32_t count_lines(const char* filename);
+
 #endif  // COUNT_MIN_SKETCH_H

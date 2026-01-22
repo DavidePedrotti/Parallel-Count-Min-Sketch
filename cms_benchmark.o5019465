@@ -1,7 +1,0 @@
-Using Python: python3
-Python 3.9.12
- COUNT-MIN SKETCH PERFORMANCE ANALYSIS
-Dataset: 5M elements
-
-Running sequential baseline
-ERROR: Could not extract sequential time

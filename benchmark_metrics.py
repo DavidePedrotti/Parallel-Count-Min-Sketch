@@ -7,8 +7,8 @@ import subprocess
 import re
 import shutil
 
-DATASET = "data/dataset_5000000_sorted.txt"
-FOLDER = "data/"
+DATASET = "scripts/dataset_10000_ordered.txt"
+FOLDER = "scripts/"
 
 MPIRUN = "mpirun.actual" if shutil.which("mpirun.actual") else "mpirun"
 
@@ -36,7 +36,9 @@ print(" COUNT-MIN SKETCH PERFORMANCE ANALYSIS")
 print("Running sequential baseline")
 cmd = f"{MPIRUN} -np 1 ./cms_linear {DATASET} {FOLDER}"
 output = run_command(cmd)
+print("DEBUG OUTPUT:", output)
 T1 = extract_time(output, r"Total time taken to update CMS: ([\d.]+) seconds")
+print(f"PROVA T1: {T1}")
 
 if T1 is None:
     print("ERROR: Could not extract sequential time")
@@ -186,13 +188,14 @@ for r in results_mainv3:
 # Comparative analysis
 print("   COMPARATIVE ANALYSIS")
 
-print("│ Processes │  main.c  │ mainV2.c │ mainV3.c │")
+print("│ Processes │ Baseline │  main.c  │ mainV2.c │ mainV3.c │")
 for i, P in enumerate(processes):
     if i < len(results_main) and i < len(results_mainv2) and i < len(results_mainv3):
         time_main = results_main[i]['time']
         time_mainv2 = results_mainv2[i]['time']
         time_mainv3 = results_mainv3[i]['time']
-        print(f"│     {P}     │ {time_main:6.3f}s │ {time_mainv2:6.3f}s │ {time_mainv3:6.3f}s │")
+        baseline_val = f"{T1:6.3f}s" if P == 1 else "   -    "
+        print(f"│     {P}     │ {baseline_val} │ {time_main:6.3f}s │ {time_mainv2:6.3f}s │ {time_mainv3:6.3f}s │")
 
 
 # Scalability analysis

@@ -1,4 +1,0 @@
-  File "benchmark_metrics.py", line 24
-    print(f"Dataset: 5M elements\n")
-                                  ^
-SyntaxError: invalid syntax
