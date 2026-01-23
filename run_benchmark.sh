@@ -26,12 +26,5 @@ fi
 echo "Using Python: $PYTHON_CMD"
 $PYTHON_CMD --version
 
-# Compile all versions
-mpicc -g -Wall -std=c99 -o cms_linear count_min_sketch.c cms_linear.c -lm
-mpicc -g -Wall -std=c99 -o main count_min_sketch.c main.c -lm
-mpicc -g -Wall -std=c99 -o mainV2 count_min_sketch.c mainV2.c -lm
-mpicc -g -Wall -std=c99 -o mainV3 count_min_sketch.c mainV3.c -lm
-
 # Run benchmark
 $PYTHON_CMD benchmark_metrics.py
-

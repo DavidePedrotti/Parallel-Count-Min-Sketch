@@ -6,8 +6,11 @@ for Count-Min Sketch MPI implementations
 import subprocess
 import re
 import shutil
+import csv
+import os
+from datetime import datetime
 
-DATASET = "scripts/dataset_10000_ordered.txt"
+DATASET = "scripts/dataset_1000000000_ordered.txt"
 FOLDER = "scripts/"
 
 MPIRUN = "mpirun.actual" if shutil.which("mpirun.actual") else "mpirun"
@@ -74,24 +77,27 @@ for P in processes:
         print(f"  ERROR: Could not extract time for {P} processes")
         continue
     
-    # Calculate metrics
-    speedup = T1 / T if T > 0 else 0
-    efficiency = speedup / P if P > 0 else 0
-    
     # Extract query times
     point_time, range_time, inner_time = extract_query_times(output)
     
     results_main.append({
         'processes': P,
         'time': T,
-        'speedup': speedup,
-        'efficiency': efficiency,
+        'speedup': 0,  # Calculated later
+        'efficiency': 0,
         'point_query': point_time,
         'range_query': range_time,
         'inner_product': inner_time
     })
     
     print(f"Time with {P} processes: {T:.3f}s")
+
+# Calculate speedup/efficiency for main.c using its own 1-process time
+if len(results_main) > 0:
+    T_serial_main = results_main[0]['time']
+    for r in results_main:
+        r['speedup'] = T_serial_main / r['time'] if r['time'] > 0 else 0
+        r['efficiency'] = r['speedup'] / r['processes'] if r['processes'] > 0 else 0
 
 print("MAINV2.C (MPI-I/O Implementation)")
  
@@ -110,24 +116,27 @@ for P in processes:
             print(f"  Last 400 chars of output:\n{output[-400:]}")
             continue
     
-    # Calculate metrics
-    speedup = T1 / T if T > 0 else 0
-    efficiency = speedup / P if P > 0 else 0
-    
     # Extract query times
     point_time, range_time, inner_time = extract_query_times(output)
     
     results_mainv2.append({
         'processes': P,
         'time': T,
-        'speedup': speedup,
-        'efficiency': efficiency,
+        'speedup': 0,  # Calculated later
+        'efficiency': 0,
         'point_query': point_time,
         'range_query': range_time,
         'inner_product': inner_time
     })
     
     print(f"Time with {P} processes: {T:.3f}s")
+
+# Calculate speedup/efficiency for mainV2.c using its own 1-process time
+if len(results_mainv2) > 0:
+    T_serial_mainv2 = results_mainv2[0]['time']
+    for r in results_mainv2:
+        r['speedup'] = T_serial_mainv2 / r['time'] if r['time'] > 0 else 0
+        r['efficiency'] = r['speedup'] / r['processes'] if r['processes'] > 0 else 0
 
 print("MAINV3.C (MPI-I/O Optimized Implementation)")
 
@@ -141,24 +150,27 @@ for P in processes:
         print(f"  ERROR: Could not extract time for {P} processes")
         continue
     
-    # Calculate metrics
-    speedup = T1 / T if T > 0 else 0
-    efficiency = speedup / P if P > 0 else 0
-    
     # Extract query times
     point_time, range_time, inner_time = extract_query_times(output)
     
     results_mainv3.append({
         'processes': P,
         'time': T,
-        'speedup': speedup,
-        'efficiency': efficiency,
+        'speedup': 0,  # Calculated later
+        'efficiency': 0,
         'point_query': point_time,
         'range_query': range_time,
         'inner_product': inner_time
     })
     
     print(f"Time with {P} processes: {T:.3f}s")
+
+# Calculate speedup/efficiency for mainV3.c using its own 1-process time
+if len(results_mainv3) > 0:
+    T_serial_mainv3 = results_mainv3[0]['time']
+    for r in results_mainv3:
+        r['speedup'] = T_serial_mainv3 / r['time'] if r['time'] > 0 else 0
+        r['efficiency'] = r['speedup'] / r['processes'] if r['processes'] > 0 else 0
 
 print("   PERFORMANCE METRICS - MAIN.C")
 
@@ -196,6 +208,35 @@ for i, P in enumerate(processes):
         time_mainv3 = results_mainv3[i]['time']
         baseline_val = f"{T1:6.3f}s" if P == 1 else "   -    "
         print(f"│     {P}     │ {baseline_val} │ {time_main:6.3f}s │ {time_mainv2:6.3f}s │ {time_mainv3:6.3f}s │")
+
+# Save results to CSV for plotting
+csv_filename = "benchmark_results.csv"
+dataset_name = os.path.basename(DATASET)
+dataset_size_mb = os.path.getsize(DATASET) / (1024*1024)
+
+# Check if file exists to decide if we need headers
+file_exists = os.path.exists(csv_filename)
+
+with open(csv_filename, 'a', newline='') as csvfile:
+    fieldnames = ['dataset', 'dataset_size_mb', 'processes', 'baseline', 'main', 'mainV2', 'mainV3']
+    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+    
+    if not file_exists:
+        writer.writeheader()
+    
+    for i, P in enumerate(processes):
+        if i < len(results_main) and i < len(results_mainv2) and i < len(results_mainv3):
+            writer.writerow({
+                'dataset': dataset_name,
+                'dataset_size_mb': f"{dataset_size_mb:.1f}",
+                'processes': P,
+                'baseline': T1 if P == 1 else '',
+                'main': results_main[i]['time'],
+                'mainV2': results_mainv2[i]['time'],
+                'mainV3': results_mainv3[i]['time']
+            })
+
+print(f"\n✓ Results saved to {csv_filename}")
 
 
 # Scalability analysis
