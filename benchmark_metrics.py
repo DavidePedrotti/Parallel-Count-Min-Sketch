@@ -10,7 +10,7 @@ import csv
 import os
 from datetime import datetime
 
-DATASET = "scripts/dataset_1000000000_ordered.txt"
+DATASET = "scripts/dataset_1000000000.txt"
 FOLDER = "scripts/"
 
 MPIRUN = "mpirun.actual" if shutil.which("mpirun.actual") else "mpirun"
@@ -214,7 +214,6 @@ csv_filename = "benchmark_results.csv"
 dataset_name = os.path.basename(DATASET)
 dataset_size_mb = os.path.getsize(DATASET) / (1024*1024)
 
-# Check if file exists to decide if we need headers
 file_exists = os.path.exists(csv_filename)
 
 with open(csv_filename, 'a', newline='') as csvfile:
@@ -271,30 +270,3 @@ if len(results_mainv3) >= 2:
         print(f"  {r['processes']} cores: {r['efficiency']*100:.1f}%")
     
     print(f"Variation: {eff_variation*100:.1f}pp")
-
-# Query Performance Comparison
-print("\n" + "=" * 60)
-print("   QUERY PERFORMANCE COMPARISON")
-print("=" * 60)
-
-print("\n--- POINT QUERY TIME (seconds) ---")
-print("│ Processes │  Baseline │  main.c  │ mainV2.c │ mainV3.c │")
-for i, P in enumerate(processes):
-    if i < len(results_main) and i < len(results_mainv2) and i < len(results_mainv3):
-        baseline_val = f"{baseline_point:8.6f}" if (P == 1 and baseline_point is not None) else "   -     "
-        print(f"│     {P}     │ {baseline_val} │ {results_main[i]['point_query']:8.6f} │ {results_mainv2[i]['point_query']:8.6f} │ {results_mainv3[i]['point_query']:8.6f} │")
-
-print("\n--- RANGE QUERY TIME (seconds) ---")
-print("│ Processes │  Baseline │  main.c  │ mainV2.c │ mainV3.c │")
-for i, P in enumerate(processes):
-    if i < len(results_main) and i < len(results_mainv2) and i < len(results_mainv3):
-        baseline_val = f"{baseline_range:8.6f}" if (P == 1 and baseline_range is not None) else "   -     "
-        print(f"│     {P}     │ {baseline_val} │ {results_main[i]['range_query']:8.6f} │ {results_mainv2[i]['range_query']:8.6f} │ {results_mainv3[i]['range_query']:8.6f} │")
-
-print("\n--- INNER PRODUCT TIME (seconds) ---")
-print("│ Processes │  Baseline │  main.c  │ mainV2.c │ mainV3.c │")
-for i, P in enumerate(processes):
-    if i < len(results_main) and i < len(results_mainv2) and i < len(results_mainv3):
-        baseline_val = f"{baseline_inner:8.6f}" if (P == 1 and baseline_inner is not None) else "   -     "
-        print(f"│     {P}     │ {baseline_val} │ {results_main[i]['inner_product']:8.6f} │ {results_mainv2[i]['inner_product']:8.6f} │ {results_mainv3[i]['inner_product']:8.6f} │")
-   
