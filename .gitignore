@@ -1,5 +1,6 @@
 .vscode/settings.json
 main
+output_results/
 output_*
 error_*
 scripts/*.txt

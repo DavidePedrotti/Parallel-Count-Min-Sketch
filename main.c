@@ -155,7 +155,7 @@ int main(int argc, char* argv[]) {
 
   double t_end = MPI_Wtime();
   if (my_rank == 0)
-    printf("Total time = %f seconds\n", t_end - t_start);
+    printf("Total time: %f seconds\n", t_end - t_start);
 
   MPI_Finalize();
   return 0;

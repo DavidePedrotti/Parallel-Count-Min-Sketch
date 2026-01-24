@@ -69,7 +69,7 @@ int main(int argc, char* argv[]) {
   base_filename = base_filename ? base_filename + 1 : FILENAME;  // base_filename+1 moves past '/'
   char total_count_filename[100];
   snprintf(total_count_filename, sizeof(total_count_filename), "%s/total_%s", FOLDER, base_filename);
-  
+
   // Count unique values from ground truth file
   uint32_t n_unique = count_lines(total_count_filename);
   if (n_unique == 0) {
@@ -79,7 +79,7 @@ int main(int argc, char* argv[]) {
     MPI_Finalize();
     return 4;
   }
-  
+
   RealCount* count = load_count(total_count_filename, n_unique);
   if (!count) {
     fprintf(stderr, "Error: cannot load the ground truth file %s\n", total_count_filename);
@@ -96,30 +96,30 @@ int main(int argc, char* argv[]) {
   double t_point_start = MPI_Wtime();
   test_basic_update_query(&cms, true_A_sum, true_B_sum);
   double t_point_end = MPI_Wtime();
-  
+
   // Range Query Test
   double t_range_start = MPI_Wtime();
   test_range_query(&cms, true_Range_sum);
   double t_range_end = MPI_Wtime();
-  
+
   // Inner Product Test
   double t_inner_start = MPI_Wtime();
   uint64_t inner_prod = cms_inner_product(&cms, &cms);
   double t_inner_end = MPI_Wtime();
   printf("\nInner Product Test\n");
   printf("Inner product (self): %lu\n", (unsigned long)inner_prod);
-  
+
   printf("\nQuery Timing:\n");
   printf("Point query time:  %f s\n", t_point_end - t_point_start);
   printf("Range query time:  %f s\n", t_range_end - t_range_start);
   printf("Inner product time: %f s\n", t_inner_end - t_inner_start);
-  
+
   cms_free(&cms);
 
   free(all_items);
 
   double t_end = MPI_Wtime();
-  printf("\nTotal time taken to update CMS: %.2f seconds\n", t_before_accuracy - t_start);
+  printf("Total time: %f seconds\n", t_before_accuracy - t_start);
   printf("Total time taken for accuracy test: %.2f seconds\n", t_after_accuracy - t_before_accuracy);
   printf("Total execution time: %.2f seconds\n", t_end - t_start);
 

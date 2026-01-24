@@ -2,10 +2,10 @@ CC = mpicc
 CFLAGS = -g -Wall -std=c99
 LDFLAGS = -lm
 
-SRCS = count_min_sketch.c cms_linear.c
+SRCS = count_min_sketch.c mainV3.c
 # SRCS = count_min_sketch.c mainV2.c
 
-TARGET = main # Executable name
+TARGET = mainV3 # Executable name
 
 # Build rules
 .PHONY: all $(TARGET)

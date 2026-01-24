@@ -1,10 +1,10 @@
+#include <limits.h>
 #include <mpi.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <limits.h>
 
 #include "count_min_sketch.h"
 
@@ -14,7 +14,6 @@
  */
 
 int main(int argc, char* argv[]) {
-
   int comm_sz, my_rank;
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &comm_sz);
@@ -187,11 +186,25 @@ int main(int argc, char* argv[]) {
   if (my_rank == 0) {
     printf("\nTotal elements inserted: %u\n", global_cms.total);
 
+    double t_point_start = MPI_Wtime();
     test_basic_update_query(&global_cms, true_123, true_456);
-    test_range_query(&global_cms, true_range);
+    double t_point_end = MPI_Wtime();
 
+    double t_range_start = MPI_Wtime();
+    test_range_query(&global_cms, true_range);
+    double t_range_end = MPI_Wtime();
+
+    double t_inner_start = MPI_Wtime();
     uint64_t inner_prod = cms_inner_product(&global_cms, &global_cms);
+    double t_inner_end = MPI_Wtime();
+
+    printf("\nInner Product Test\n");
     printf("Inner product (self): %lu\n", (unsigned long)inner_prod);
+
+    printf("\nQuery Timing:\n");
+    printf("Point query time:  %f s\n", t_point_end - t_point_start);
+    printf("Range query time:  %f s\n", t_range_end - t_range_start);
+    printf("Inner product time: %f s\n", t_inner_end - t_inner_start);
 
     cms_free(&global_cms);
   }
@@ -203,7 +216,7 @@ int main(int argc, char* argv[]) {
 
   /* ----------- OUTPUT compatibile benchmark script ----------- */
   if (my_rank == 0) {
-    printf("Total time V2 full chunk: %f seconds\n", t_end - t_start);
+    printf("Total time: %f seconds\n", t_end - t_start);
     printf("I/O + parsing time: %f s\n", t_io_end - t_io_start);
     printf("CMS update time: %f s\n", t_update_end - t_update_start);
     printf("Reduction time: %f s\n", t_reduce_end - t_reduce_start);
