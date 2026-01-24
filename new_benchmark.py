@@ -149,10 +149,17 @@ def main():
       range_query_times.append(result['range_query'])
       inner_product_times.append(result['inner_product'])
 
-    avg_time_taken = sum(times_taken) / len(times_taken) if times_taken else 0
-    avg_point_query_time = sum(point_query_times) / len(point_query_times) if point_query_times else 0
-    avg_range_query_time = sum(range_query_times) / len(range_query_times) if range_query_times else 0
-    avg_inner_product_time = sum(inner_product_times) / len(inner_product_times) if inner_product_times else 0
+    valid_times_taken = [time for time in times_taken if time is not None]
+    avg_time_taken = sum(valid_times_taken) / len(valid_times_taken) if times_taken else 0
+
+    valid_point_query_times = [time for time in point_query_times if time is not None]
+    avg_point_query_time = sum(valid_point_query_times) / len(valid_point_query_times) if valid_point_query_times else 0
+
+    valid_range_query_times = [time for time in range_query_times if time is not None]
+    avg_range_query_time = sum(valid_range_query_times) / len(valid_range_query_times) if valid_range_query_times else 0
+
+    valid_inner_product_times = [time for time in inner_product_times if time is not None]
+    avg_inner_product_time = sum(valid_inner_product_times) / len(valid_inner_product_times) if valid_inner_product_times else 0
 
     print(f"Configuration: {config}")
     print(f"Mode: {result['mode']}")
