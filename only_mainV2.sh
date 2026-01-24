@@ -11,4 +11,4 @@ cd $PBS_O_WORKDIR
 module load mpich-3.2
 
 # Run benchmark
-mpirun.actual -np 2 ./mainV2 scripts/dataset_10000_ordered.txt
+mpirun.actual -np 2 ./mainV2 data/dataset_50000_sorted.txt
