@@ -10,8 +10,8 @@ import csv
 import os
 from datetime import datetime
 
-DATASET = "scripts/dataset_1000000000.txt"
-FOLDER = "scripts/"
+DATASET = "data/dataset_5000000_sorted.txt"
+FOLDER = "data/"
 
 MPIRUN = "mpirun.actual" if shutil.which("mpirun.actual") else "mpirun"
 
