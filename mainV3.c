@@ -74,7 +74,7 @@ int main(int argc, char* argv[]) {
       local_items[idx++] = (uint32_t)atoi(line);
     }
     curr_line++;
-    if (curr_line >= end_idx) break;  // stop when the chunk is read
+    if (curr_line >= end_idx) break;  
   }
   fclose(fp);
 
@@ -134,7 +134,6 @@ int main(int argc, char* argv[]) {
     double t_inner_start = MPI_Wtime();
     uint64_t inner_prod = cms_inner_product(&global_cms, &global_cms);
     double t_inner_end = MPI_Wtime();
-    printf("\nInner Product Test\n");
     printf("Inner product (self): %lu\n", (unsigned long)inner_prod);
     
     printf("\nQuery Timing:\n");
