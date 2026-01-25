@@ -11,4 +11,4 @@ def count_frequencies(filename, dir):
       f.write(f"{key} {val}\n")
 
 if __name__ == "__main__":
-  count_frequencies("dataset_1000000000.txt", "./")
+  count_frequencies("dataset_50000000_sorted.txt", "../data/")

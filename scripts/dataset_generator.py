@@ -1,7 +1,7 @@
 import numpy as np
 import random
 
-dataset_sizes = [50000, 500000, 5000000]
+dataset_sizes = [50000000]
 
 def generate_data(num_elements, min_val=0, max_val=9999):
   alpha = 2.0
@@ -18,7 +18,7 @@ def create_dataset(num_elements):
   with open(filename, "w") as f:
     for value in data_sorted:
       f.write(f"{value}\n")
-  
+
   print(f"Dataset with {num_elements} elements has been created\n")
 
 if __name__ == "__main__":

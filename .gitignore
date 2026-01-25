@@ -7,3 +7,4 @@ scripts/*.txt
 cms_benchmark.*
 data/dataset_500000000_sorted.txt
 data/total_dataset_500000000_sorted.txt
+env/
