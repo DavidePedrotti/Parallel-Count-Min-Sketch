@@ -7,16 +7,16 @@ from datetime import datetime
 import time
 
 test_configurations = [
-  {"chunks" : 1, "cores_per_chunk" : 1, "mode" : "pack:excl", "processes" : 1},
-  {"chunks" : 1, "cores_per_chunk" : 2, "mode" : "pack:excl", "processes" : 2},
-  {"chunks" : 2, "cores_per_chunk" : 1, "mode" : "pack:excl", "processes" : 2},
-  {"chunks" : 1, "cores_per_chunk" : 4, "mode" : "pack:excl", "processes" : 4},
-  {"chunks" : 4, "cores_per_chunk" : 1, "mode" : "pack:excl", "processes" : 4},
-  {"chunks" : 2, "cores_per_chunk" : 4, "mode" : "pack:excl", "processes" : 8},
-  {"chunks" : 4, "cores_per_chunk" : 4, "mode" : "pack:excl", "processes" : 16},
-  {"chunks" : 4, "cores_per_chunk" : 8, "mode" : "pack:excl", "processes" : 32},
-  {"chunks" : 8, "cores_per_chunk" : 4, "mode" : "pack:excl", "processes" : 32},
-  {"chunks" : 8, "cores_per_chunk" : 8, "mode" : "pack:excl", "processes" : 64},
+  {"chunks" : 1, "cores_per_chunk" : 1, "mode" : "pack", "processes" : 1},
+  # {"chunks" : 1, "cores_per_chunk" : 2, "mode" : "pack", "processes" : 2},
+  # {"chunks" : 2, "cores_per_chunk" : 1, "mode" : "pack", "processes" : 2},
+  # {"chunks" : 1, "cores_per_chunk" : 4, "mode" : "pack", "processes" : 4},
+  # {"chunks" : 4, "cores_per_chunk" : 1, "mode" : "pack", "processes" : 4},
+  # {"chunks" : 2, "cores_per_chunk" : 4, "mode" : "pack", "processes" : 8},
+  # {"chunks" : 4, "cores_per_chunk" : 4, "mode" : "pack", "processes" : 16},
+  # {"chunks" : 4, "cores_per_chunk" : 8, "mode" : "pack", "processes" : 32},
+  # {"chunks" : 8, "cores_per_chunk" : 4, "mode" : "pack", "processes" : 32},
+  # {"chunks" : 8, "cores_per_chunk" : 8, "mode" : "pack", "processes" : 64},
 ]
 
 RESULTS_DIR = "output_results"
@@ -125,7 +125,7 @@ def run_benchmark(pbs_filename, name, mode):
   }
 
 def main():
-  executable_name = "mainV2"
+  executable_name = "cms_linear"
   dataset_folder = "data"
   dataset_name = "dataset_500000000_sorted.txt"
 
@@ -184,7 +184,7 @@ def main():
   subprocess.run(f"rm {extract_number_from_dataset(dataset_name)}_*", shell=True, capture_output=True, text=True)
 
 def save_results_to_csv(all_results, dataset_name):
-  csv_filename = f"{RESULTS_DIR}/benchmark_results_{extract_number_from_dataset(dataset_name)}_v2_packexcl.csv"
+  csv_filename = f"{RESULTS_DIR}/benchmark_results_{extract_number_from_dataset(dataset_name)}_linear.csv"
   file_exists = os.path.exists(csv_filename)
 
   with open(csv_filename, 'a', newline='') as csvfile:
