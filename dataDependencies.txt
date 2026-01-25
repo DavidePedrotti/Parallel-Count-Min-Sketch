@@ -1,0 +1,6 @@
+LOCATION | Variable / Cell | Access | Early / Late | Iteration | Carried | Dependency Type
+1        | all_items[i]    | read   | early        | i         | no      | –
+2        | cms->total (read) | read   | early        | i         | yes     | flow (RAW)
+3        | cms->total (write) | write  | late         | i         | yes     | out (WAW)
+4        | cms->table[j][h] (read) | read   | early        | i         | yes     | flow (RAW)
+5        | cms->table[j][h] (write) | write  | late         | i         | yes     | out (WAW)

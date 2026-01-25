@@ -26,7 +26,8 @@ int main(int argc, char* argv[]) {
     MPI_Abort(MPI_COMM_WORLD, 1);
   }
 
-  MPI_Bcast(local_cms.hashFunctions, local_cms.depth * sizeof(UniversalHash),
+  MPI_Bcast(local_cms.hashFunctions,
+            local_cms.depth * sizeof(UniversalHash),
             MPI_BYTE, 0, MPI_COMM_WORLD);
 
   const char* FILENAME = argv[1];
@@ -35,17 +36,19 @@ int main(int argc, char* argv[]) {
   uint64_t total_items = 0;
   uint32_t true_A_sum = 0, true_B_sum = 0, true_Range_sum = 0;
 
-  // Rank 0 legge tutto il file
+  /* Rank 0 reads the entire file */
   if (my_rank == 0) {
+    printf("Parallel Count-Min Sketch (MAINV1)\n");
+
     FILE* fp = fopen(FILENAME, "r");
     if (!fp) {
       fprintf(stderr, "Rank 0: cannot open file %s\n", FILENAME);
       MPI_Abort(MPI_COMM_WORLD, 2);
     }
 
-    // Conta righe
     char line[64];
-    while (fgets(line, sizeof(line), fp)) total_items++;
+    while (fgets(line, sizeof(line), fp))
+      total_items++;
     rewind(fp);
 
     all_items = malloc(total_items * sizeof(uint32_t));
@@ -64,16 +67,24 @@ int main(int argc, char* argv[]) {
       if (v >= 100 && v <= 110) true_Range_sum++;
     }
     fclose(fp);
+
+    /* -------- DATASET INFO (ADDED) -------- */
+    printf("\n DATASET INFO \n");
+    printf("Dataset file: %s\n", FILENAME);
+    double dataset_size_mb =
+        (double)(total_items * sizeof(uint32_t)) / (1024.0 * 1024.0);
+    printf("Dataset size: %.2f MB\n", dataset_size_mb);
+    printf("\n")
+    /* ------------------------------------- */
   }
 
-  // Comunico a tutti il numero totale di elementi
   MPI_Bcast(&total_items, 1, MPI_UINT64_T, 0, MPI_COMM_WORLD);
 
-  // Calcolo counts e displacements per MPI_Scatterv
   int* send_counts = malloc(comm_sz * sizeof(int));
   int* displs = malloc(comm_sz * sizeof(int));
   int base = total_items / comm_sz;
   int remainder = total_items % comm_sz;
+
   for (int i = 0; i < comm_sz; i++) {
     send_counts[i] = base + (i < remainder ? 1 : 0);
     displs[i] = (i == 0) ? 0 : displs[i - 1] + send_counts[i - 1];
@@ -94,12 +105,9 @@ int main(int argc, char* argv[]) {
     all_items = NULL;
   }
 
-  // Aggiorno CMS locale
-  for (int i = 0; i < send_counts[my_rank]; i++) {
+  for (int i = 0; i < send_counts[my_rank]; i++)
     cms_update_int(&local_cms, local_items[i], 1);
-  }
 
-  // Riduzione globale
   CountMinSketch global_cms;
   if (my_rank == 0) {
     if (cms_init(&global_cms, EPSILON, DELTA, PRIME) != 0) {
@@ -123,28 +131,26 @@ int main(int argc, char* argv[]) {
              1, MPI_UINT32_T, MPI_SUM, 0, MPI_COMM_WORLD);
 
   if (my_rank == 0) {
-    // Point Query Test
     double t_point_start = MPI_Wtime();
     test_basic_update_query(&global_cms, true_A_sum, true_B_sum);
     double t_point_end = MPI_Wtime();
-    
-    // Range Query Test
+
     double t_range_start = MPI_Wtime();
     test_range_query(&global_cms, true_Range_sum);
     double t_range_end = MPI_Wtime();
-    
-    // Inner Product Test
+
     double t_inner_start = MPI_Wtime();
     uint64_t inner_prod = cms_inner_product(&global_cms, &global_cms);
     double t_inner_end = MPI_Wtime();
+
     printf("\nInner Product Test\n");
     printf("Inner product (self): %lu\n", (unsigned long)inner_prod);
-    
+
     printf("\nQuery Timing:\n");
     printf("Point query time:  %f s\n", t_point_end - t_point_start);
     printf("Range query time:  %f s\n", t_range_end - t_range_start);
     printf("Inner product time: %f s\n", t_inner_end - t_inner_start);
-    
+
     cms_free(&global_cms);
   }
 
@@ -154,8 +160,10 @@ int main(int argc, char* argv[]) {
   free(displs);
 
   double t_end = MPI_Wtime();
-  if (my_rank == 0)
+  if (my_rank == 0) {
     printf("Total time: %f seconds\n", t_end - t_start);
+    printf("\n --------------------------------------\n");
+  }
 
   MPI_Finalize();
   return 0;
