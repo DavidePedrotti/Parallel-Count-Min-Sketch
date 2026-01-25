@@ -60,7 +60,7 @@ def plot_efficiency(csv_files, folder='data', output='efficiency_plot.png'):
 
     plt.xlabel('Number of Processes', fontsize=12)
     plt.ylabel('Efficiency (%)', fontsize=12)
-    plt.title('Efficiency v2 500M Elements',
+    plt.title('Efficiency v3 500M Elements',
               fontsize=14, fontweight='bold')
     plt.legend(fontsize=10)
     plt.grid(True, alpha=0.3)
@@ -74,12 +74,12 @@ def plot_efficiency(csv_files, folder='data', output='efficiency_plot.png'):
 
 if __name__ == "__main__":
     csv_files = [
-        {'path': 'benchmark_results_500000000_v2_pack.csv', 'label': 'Pack'},
-        {'path': 'benchmark_results_500000000_v2_packexcl.csv', 'label': 'PackExcl'},
-        {'path': 'benchmark_results_500000000_v2_scatter.csv', 'label': 'Scatter'},
-        {'path': 'benchmark_results_500000000_v2_scatterexcl.csv', 'label': 'ScatterExcl'},
+        {'path': 'benchmark_results_500000000_v3_pack.csv', 'label': 'Pack'},
+        {'path': 'benchmark_results_500000000_v3_packexcl.csv', 'label': 'PackExcl'},
+        {'path': 'benchmark_results_500000000_v3_scatter.csv', 'label': 'Scatter'},
+        {'path': 'benchmark_results_500000000_v3_scatterexcl.csv', 'label': 'ScatterExcl'},
     ]
 
     folder = '../csv_results/'
 
-    plot_efficiency(csv_files, folder=folder, output='efficiency_plot.png')
+    plot_efficiency(csv_files, folder=folder, output='efficiency_plot_v3.png')

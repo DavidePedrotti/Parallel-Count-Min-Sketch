@@ -73,7 +73,7 @@ def plot_speedup(csv_files, folder='data', output='speedup_plot.png'):
 
     plt.xlabel('Number of Processes', fontsize=12)
     plt.ylabel('Speedup', fontsize=12)
-    plt.title('Speedup v2 500M Elements',
+    plt.title('Speedup v2 50M Elements',
               fontsize=14, fontweight='bold')
     plt.legend(fontsize=10)
     plt.grid(True, alpha=0.3)
@@ -88,12 +88,12 @@ def plot_speedup(csv_files, folder='data', output='speedup_plot.png'):
 
 if __name__ == "__main__":
     csv_files = [
-        {'path': 'benchmark_results_500000000_v2_pack.csv', 'label': 'Pack'},
-        {'path': 'benchmark_results_500000000_v2_packexcl.csv', 'label': 'PackExcl'},
-        {'path': 'benchmark_results_500000000_v2_scatter.csv', 'label': 'Scatter'},
-        {'path': 'benchmark_results_500000000_v2_scatterexcl.csv', 'label': 'ScatterExcl'},
+        {'path': 'benchmark_results_50000000_v2_pack.csv', 'label': 'Pack'},
+        {'path': 'benchmark_results_50000000_v2_packexcl.csv', 'label': 'PackExcl'},
+        {'path': 'benchmark_results_50000000_v2_scatter.csv', 'label': 'Scatter'},
+        {'path': 'benchmark_results_50000000_v2_scatterexcl.csv', 'label': 'ScatterExcl'},
     ]
 
     folder = '../csv_results/'
 
-    plot_speedup(csv_files, folder=folder, output='speedup_plot.png')
+    plot_speedup(csv_files, folder=folder, output='speedup_plot_v2.png')
