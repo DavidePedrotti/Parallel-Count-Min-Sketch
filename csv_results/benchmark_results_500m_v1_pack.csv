@@ -1,0 +1,11 @@
+configuration,mode,avg_time_taken,avg_point_query,avg_range_query,avg_inner_product
+"{'chunks': 1, 'cores_per_chunk': 1, 'mode': 'pack', 'processes': 1}",pack,56.989982299999994,2.6600000000000003e-05,4.4e-06,2.6300000000000006e-05
+"{'chunks': 1, 'cores_per_chunk': 2, 'mode': 'pack', 'processes': 2}",pack,44.8507919,2.42e-05,3.3e-06,2.5200000000000006e-05
+"{'chunks': 2, 'cores_per_chunk': 1, 'mode': 'pack', 'processes': 2}",pack,44.969345700000005,2.26e-05,3.199999999999999e-06,2.5000000000000005e-05
+"{'chunks': 1, 'cores_per_chunk': 4, 'mode': 'pack', 'processes': 4}",pack,39.6850673,2.3800000000000003e-05,3.4999999999999995e-06,2.82e-05
+"{'chunks': 4, 'cores_per_chunk': 1, 'mode': 'pack', 'processes': 4}",pack,37.18731190000001,2.0599999999999996e-05,3.4e-06,2.48e-05
+"{'chunks': 2, 'cores_per_chunk': 4, 'mode': 'pack', 'processes': 8}",pack,35.5324433,2.21e-05,3.399999999999999e-06,2.8400000000000003e-05
+"{'chunks': 4, 'cores_per_chunk': 4, 'mode': 'pack', 'processes': 16}",pack,40.4821957,2.6900000000000003e-05,4e-06,2.7300000000000003e-05
+"{'chunks': 4, 'cores_per_chunk': 8, 'mode': 'pack', 'processes': 32}",pack,33.5116104,2.2999999999999997e-05,4.2e-06,2.46e-05
+"{'chunks': 8, 'cores_per_chunk': 4, 'mode': 'pack', 'processes': 32}",pack,36.7913609,2.42e-05,4.3e-06,2.63e-05
+"{'chunks': 8, 'cores_per_chunk': 8, 'mode': 'pack', 'processes': 64}",pack,35.05928730000001,6.220000000000001e-05,0.0012102999999999999,2.79e-05

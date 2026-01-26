@@ -7,23 +7,23 @@ from datetime import datetime
 import time
 
 test_configurations = [
-  {"chunks" : 1, "cores_per_chunk" : 1, "mode" : "scatter", "processes" : 1},
-  {"chunks" : 1, "cores_per_chunk" : 2, "mode" : "scatter", "processes" : 2},
-  {"chunks" : 2, "cores_per_chunk" : 1, "mode" : "scatter", "processes" : 2},
-  {"chunks" : 1, "cores_per_chunk" : 4, "mode" : "scatter", "processes" : 4},
-  {"chunks" : 4, "cores_per_chunk" : 1, "mode" : "scatter", "processes" : 4},
-  {"chunks" : 2, "cores_per_chunk" : 4, "mode" : "scatter", "processes" : 8},
-  {"chunks" : 4, "cores_per_chunk" : 4, "mode" : "scatter", "processes" : 16},
-  {"chunks" : 4, "cores_per_chunk" : 8, "mode" : "scatter", "processes" : 32},
-  {"chunks" : 8, "cores_per_chunk" : 4, "mode" : "scatter", "processes" : 32},
-  {"chunks" : 8, "cores_per_chunk" : 8, "mode" : "scatter", "processes" : 64},
+  {"chunks" : 8, "cores_per_chunk" : 8, "mode" : "pack:excl", "processes" : 64},
+  {"chunks" : 8, "cores_per_chunk" : 4, "mode" : "pack:excl", "processes" : 32},
+  {"chunks" : 4, "cores_per_chunk" : 8, "mode" : "pack:excl", "processes" : 32},
+  {"chunks" : 4, "cores_per_chunk" : 4, "mode" : "pack:excl", "processes" : 16},
+  {"chunks" : 2, "cores_per_chunk" : 4, "mode" : "pack:excl", "processes" : 8},
+  {"chunks" : 4, "cores_per_chunk" : 1, "mode" : "pack:excl", "processes" : 4},
+  {"chunks" : 1, "cores_per_chunk" : 4, "mode" : "pack:excl", "processes" : 4},
+  {"chunks" : 2, "cores_per_chunk" : 1, "mode" : "pack:excl", "processes" : 2},
+  {"chunks" : 1, "cores_per_chunk" : 2, "mode" : "pack:excl", "processes" : 2},
+  {"chunks" : 1, "cores_per_chunk" : 1, "mode" : "pack:excl", "processes" : 1},
 ]
 
 RESULTS_DIR = "output_results"
 os.makedirs(RESULTS_DIR, exist_ok=True)
 
 def gen_pbs_script(chunks, cores_per_chunk, mode, processes, executable_name, dataset_folder, dataset_name):
-  name = f"{extract_number_from_dataset(dataset_name)}_{chunks}_{processes}_scatter"
+  name = f"{extract_number_from_dataset(dataset_name)}_{chunks}_{processes}_packexcl"
   walltime = "0:30:00"
   queue = "short_HPC4DS"
   pbs_script = f"""#!/bin/bash
@@ -69,7 +69,7 @@ def gen_script(configuration, executable_name, dataset_folder, dataset_name):
   mode = configuration['mode']
   processes = configuration['processes']
   
-  name = f"{extract_number_from_dataset(dataset_name)}_{chunks}_{processes}_scatter"
+  name = f"{extract_number_from_dataset(dataset_name)}_{chunks}_{processes}_packexcl"
   print(f"Running with {name} configuration")
 
   pbs_script = gen_pbs_script(chunks, cores_per_chunk, mode, processes, executable_name, dataset_folder, dataset_name)
@@ -125,9 +125,9 @@ def run_benchmark(pbs_filename, name, mode):
   }
 
 def main():
-  executable_name = "mainV3"
+  executable_name = "mainV2"
   dataset_folder = "data"
-  dataset_name = "dataset_50000000_sorted.txt"
+  dataset_name = "dataset_250000000_sorted.txt"
 
   all_results = []
 
@@ -184,7 +184,7 @@ def main():
   subprocess.run(f"rm {extract_number_from_dataset(dataset_name)}_*", shell=True, capture_output=True, text=True)
 
 def save_results_to_csv(all_results, dataset_name):
-  csv_filename = f"{RESULTS_DIR}/benchmark_results_{extract_number_from_dataset(dataset_name)}_v3_scatter.csv"
+  csv_filename = f"{RESULTS_DIR}/benchmark_results_{extract_number_from_dataset(dataset_name)}_v2_packexcl.csv"
   file_exists = os.path.exists(csv_filename)
 
   with open(csv_filename, 'a', newline='') as csvfile:

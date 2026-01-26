@@ -1,0 +1,2 @@
+configuration,mode,avg_time_taken,avg_point_query,avg_range_query,avg_inner_product
+"{'chunks': 1, 'cores_per_chunk': 1, 'mode': 'pack', 'processes': 1}",pack,106.09186170000001,6.5e-06,4.4e-06,2.7200000000000004e-05

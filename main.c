@@ -74,7 +74,7 @@ int main(int argc, char* argv[]) {
     double dataset_size_mb =
         (double)(total_items * sizeof(uint32_t)) / (1024.0 * 1024.0);
     printf("Dataset size: %.2f MB\n", dataset_size_mb);
-    printf("\n")
+    printf("\n");
     /* ------------------------------------- */
   }
 
