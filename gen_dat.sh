@@ -1,10 +1,8 @@
 #!/bin/bash
-#PBS -N cms_benchmark
+#PBS -N gen_datasets          
 #PBS -l select=1:ncpus=8:mem=4gb
-#PBS -l walltime=0:30:00
+#PBS -l walltime=02:00:00
 #PBS -q short_HPC4DS
-
-mkdir -p output error
 
 cd $PBS_O_WORKDIR
 
@@ -20,8 +18,4 @@ else
     PYTHON_CMD=python
 fi
 
-echo "Using Python: $PYTHON_CMD"
-$PYTHON_CMD --version
-
-# Run benchmark
-$PYTHON_CMD benchmark_metrics.py
+$PYTHON_CMD ./scripts/gen_datasets.py 

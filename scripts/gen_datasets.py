@@ -28,7 +28,7 @@ def sort_file(infile, outfile):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--sizes", nargs="+", type=int, default=[10000, 1000000, 10000000, 10000000, 100000000, 1000000000])
+    parser.add_argument("--sizes", nargs="+", type=int, default=[1000000000])
     parser.add_argument("--seed", type=int, default=12345)
     args = parser.parse_args()
 

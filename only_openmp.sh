@@ -13,4 +13,4 @@ export OMP_NUM_THREADS=4
 export OMP_PROC_BIND=close
 export OMP_PLACES=cores
 
-./openmp_only data/dataset_1000000_ordered.txt >> output_omp.txt
+./openmp_only data/dataset_1000000000_ordered.txt >> output_omp.txt

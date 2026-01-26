@@ -10,4 +10,4 @@ cd $PBS_O_WORKDIR
 module load mpich-3.2
 export OMP_NUM_THREADS=4
 
-mpirun.actual -n 2 ./hybridV2 data/dataset_1000000_ordered.txt >> output_v2.txt
+mpirun.actual -n 2 ./hybridV2 data/dataset_1000000000_ordered.txt >> output_v2.txt

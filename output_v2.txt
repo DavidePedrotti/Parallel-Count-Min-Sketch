@@ -4,19 +4,19 @@ Parallel Count-Min Sketch (Version 2: Hybrid MPI + OpenMP, shared CMS)
 CMS total global: 0.06 MB
 
  DATASET INFO 
-Dataset file: data/dataset_1000000_ordered.txt
-Dataset size: 4.48 MB
+Dataset file: data/dataset_1000000000_ordered.txt
+Dataset size: 4482.27 MB
 
  ITEM ESTIMATIONS 
-Item 123 → estimation: 100574, real: 100431
-Item 456 → estimation: 100026, real: 99883
-Item 999 → estimation: 162 (expected: 0 or small)
-Range 100–110 → estimation: 101793, real: 99924
+Item 123 → estimation: 100150162, real: 99994029
+Item 456 → estimation: 100090656, real: 100013056
+Item 999 → estimation: 155253 (expected: 0 or small)
+Range 100–110 → estimation: 101393515, real: 99994707
 
  TIMINGS 
-Total time V2 full chunk: 0.179145 seconds
-I/O + parsing time: 0.063878 s
-CMS update time: 0.115091 s
-Reduction time: 0.000056 s
+Total time V2 full chunk: 214.650585 seconds
+I/O + parsing time: 50.694747 s
+CMS update time: 163.955538 s
+Reduction time: 0.000172 s
 
  --------------------------------------

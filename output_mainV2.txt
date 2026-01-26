@@ -1,22 +1,24 @@
-Parallel Count-Min Sketch (MAINV1)
+Parallel Count-Min Sketch (MAINV2)
 
  DATASET INFO 
-Dataset file: data/dataset_1000000_ordered.txt
-Dataset size: 3.81 MB
-Start Test: Basic Update and Query
-Item 123 → estimation: 100574, real: 100431
-Item 456 → estimation: 100026, real: 99883
-Item 999 → estimation: 162 (expected: 0 or a small number)
+Dataset file: data/dataset_1000000000_ordered.txt
+File size on disk: 4482.27 MB
+
+--- ITEM ESTIMATIONS ---
+Item 123 → estimation: 100150162, real: 99994029
+Item 456 → estimation: 100090656, real: 100013056
+Item 999 → estimation: 155253 (expected: 0 or a small number)
+
 Start Test: Range Query
-Range 100–110 → estimation: 101793, real: 99924
+Range 100–110 → estimation: 101393515, real: 99994707
 
-Inner Product Test
-Inner product (self): 4104513638
-
-Query Timing:
-Point query time:  0.000012 s
-Range query time:  0.000004 s
-Inner product time: 0.000025 s
-Total time: 0.154305 seconds
+--- TIMINGS ---
+Total time V2 full chunk: 65.493374 seconds
+I/O + parsing time: 47.559987 s
+CMS update time: 17.933176 s
+Reduction time: 0.000114 s
+Point query time: 3.133965e-08 s
+Range query time: 3.516524e-07 s
+Inner product time: 2.154671e-05 s
 
  --------------------------------------
