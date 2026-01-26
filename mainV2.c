@@ -1,16 +1,14 @@
-#include <limits.h>
 #include <mpi.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <time.h>
 
 #include "count_min_sketch.h"
 
 /*
- * Parallel Count-Min Sketch (MAINV2)
- * MPI-I/O safe for large files
+ * MPI-only version
+ * node 0 reads the dataset and then sends to each node its corresponding data
  */
 
 int main(int argc, char* argv[]) {
@@ -19,179 +17,121 @@ int main(int argc, char* argv[]) {
   MPI_Comm_size(MPI_COMM_WORLD, &comm_sz);
   MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
 
-  MPI_Barrier(MPI_COMM_WORLD);
   double t_start = MPI_Wtime();
-
   srand(time(NULL) + my_rank);
 
-  if (my_rank == 0)
-    printf("Parallel Count-Min Sketch (MAINV2)\n");
-
-  // ---------------- CMS initialization ----------------
   CountMinSketch local_cms;
   if (cms_init(&local_cms, EPSILON, DELTA, PRIME) != 0) {
-    if (my_rank == 0)
-      fprintf(stderr, "Error initializing CMS\n");
+    if (my_rank == 0) fprintf(stderr, "Error in cms_init\n");
     MPI_Abort(MPI_COMM_WORLD, 1);
   }
 
-  /* Broadcast hash functions */
-  MPI_Bcast(local_cms.hashFunctions,
-            local_cms.depth * sizeof(UniversalHash),
+  MPI_Bcast(local_cms.hashFunctions, local_cms.depth * sizeof(UniversalHash),
             MPI_BYTE, 0, MPI_COMM_WORLD);
 
   const char* FILENAME = argv[1];
 
-  // ---------------- MPI-I/O ----------------
-  MPI_Barrier(MPI_COMM_WORLD);
-  double t_io_start = MPI_Wtime();
+  uint32_t* all_items = NULL;
+  uint64_t total_items = 0;
+  uint32_t true_A_sum = 0, true_B_sum = 0, true_Range_sum = 0;
 
-  MPI_File fh;
-  MPI_File_open(MPI_COMM_WORLD, FILENAME,
-                MPI_MODE_RDONLY, MPI_INFO_NULL, &fh);
-
-  MPI_Offset file_size;
-  MPI_File_get_size(fh, &file_size);
-
-  MPI_Offset approx_chunk = file_size / comm_sz;
-  MPI_Offset my_start = my_rank * approx_chunk;
-  MPI_Offset my_end =
-      (my_rank == comm_sz - 1)
-          ? (file_size - 1)
-          : (my_start + approx_chunk - 1);
-
-  /* Align chunk start to newline */
-  if (my_rank != 0) {
-    char c;
-    MPI_File_read_at(fh, my_start - 1, &c, 1,
-                     MPI_CHAR, MPI_STATUS_IGNORE);
-    while (c != '\n' && my_start < my_end) {
-      my_start++;
-      MPI_File_read_at(fh, my_start - 1, &c, 1,
-                       MPI_CHAR, MPI_STATUS_IGNORE);
+  /* Rank 0 reads entire dataset */
+  if (my_rank == 0) {
+    printf("Parallel Count-Min Sketch (MAINV1)\n");
+    FILE* fp = fopen(FILENAME, "r");
+    if (!fp) {
+      fprintf(stderr, "Rank 0: cannot open file %s\n", FILENAME);
+      MPI_Abort(MPI_COMM_WORLD, 2);
     }
+
+    char line[64];
+    while (fgets(line, sizeof(line), fp)) total_items++;
+    rewind(fp);
+
+    all_items = malloc(total_items * sizeof(uint32_t));
+    if (!all_items) {
+      fprintf(stderr, "Rank 0: malloc failed\n");
+      MPI_Abort(MPI_COMM_WORLD, 3);
+    }
+
+    uint64_t idx = 0;
+    while (fgets(line, sizeof(line), fp)) {
+      uint32_t v = (uint32_t)atoi(line);
+      all_items[idx++] = v;
+
+      if (v == 123) true_A_sum++;
+      if (v == 456) true_B_sum++;
+      if (v >= 100 && v <= 110) true_Range_sum++;
+    }
+    fclose(fp);
+
+    /* -------- DATASET INFO -------- */
+    printf("\n DATASET INFO \n");
+    printf("Dataset file: %s\n", FILENAME);
+    double dataset_size_mb = (double)(total_items * sizeof(uint32_t)) / (1024.0 * 1024.0);
+    printf("Dataset size: %.2f MB\n", dataset_size_mb);
+    /* ------------------------------ */
   }
 
-  MPI_Offset my_chunk_size = my_end - my_start + 1;
+  MPI_Bcast(&total_items, 1, MPI_UINT64_T, 0, MPI_COMM_WORLD);
 
-  char* buffer = malloc((size_t)my_chunk_size + 1);
-  if (!buffer) MPI_Abort(MPI_COMM_WORLD, 99);
-
-  /* Read safely in chunks for large files */
-  MPI_Offset remaining = my_chunk_size;
-  MPI_Offset offset = my_start;
-  char* ptr = buffer;
-
-  while (remaining > 0) {
-    int to_read = remaining > INT_MAX ? INT_MAX : (int)remaining;
-    MPI_File_read_at(fh, offset, ptr, to_read,
-                     MPI_CHAR, MPI_STATUS_IGNORE);
-    remaining -= to_read;
-    offset += to_read;
-    ptr += to_read;
-  }
-  buffer[my_chunk_size] = '\0';
-
-  /* Trim incomplete last line */
-  if (my_rank != comm_sz - 1) {
-    char* last_nl = strrchr(buffer, '\n');
-    if (last_nl)
-      *(last_nl + 1) = '\0';
-    else
-      buffer[0] = '\0';
+  int* send_counts = malloc(comm_sz * sizeof(int));
+  int* displs = malloc(comm_sz * sizeof(int));
+  int base = total_items / comm_sz;
+  int remainder = total_items % comm_sz;
+  for (int i = 0; i < comm_sz; i++) {
+    send_counts[i] = base + (i < remainder ? 1 : 0);
+    displs[i] = (i == 0) ? 0 : displs[i - 1] + send_counts[i - 1];
   }
 
-  MPI_File_close(&fh);
-
-  // Count lines
-  size_t line_count = 0;
-  for (char* p = buffer; *p; p++)
-    if (*p == '\n') line_count++;
-
-  uint32_t* local_items = malloc(line_count * sizeof(uint32_t));
-  if (!local_items) MPI_Abort(MPI_COMM_WORLD, 99);
-
-  // Parse numbers
-  size_t idx = 0;
-  char* token = strtok(buffer, "\n");
-  while (token) {
-    local_items[idx++] = (uint32_t)strtoul(token, NULL, 10);
-    token = strtok(NULL, "\n");
+  uint32_t* local_items = malloc(send_counts[my_rank] * sizeof(uint32_t));
+  if (!local_items) {
+    fprintf(stderr, "Rank %d: malloc failed\n", my_rank);
+    MPI_Abort(MPI_COMM_WORLD, 4);
   }
-  free(buffer);
 
-  MPI_Barrier(MPI_COMM_WORLD);
-  double t_io_end = MPI_Wtime();
+  MPI_Scatterv(all_items, send_counts, displs, MPI_UINT32_T,
+               local_items, send_counts[my_rank], MPI_UINT32_T,
+               0, MPI_COMM_WORLD);
 
-  // ---------------- CMS update + local counters ----------------
-  MPI_Barrier(MPI_COMM_WORLD);
-  double t_update_start = MPI_Wtime();
-
-  uint32_t local_123 = 0, local_456 = 0, local_range = 0;
-
-  for (size_t i = 0; i < idx; i++) {
-    uint32_t val = local_items[i];
-    cms_update_int(&local_cms, val, 1);
-
-    if (val == 123) local_123++;
-    if (val == 456) local_456++;
-    if (val >= 100 && val <= 110) local_range++;
+  if (my_rank == 0) {
+    free(all_items);
+    all_items = NULL;
   }
-  free(local_items);
 
-  MPI_Barrier(MPI_COMM_WORLD);
-  double t_update_end = MPI_Wtime();
-
-  // ---------------- Reduction ----------------
-  MPI_Barrier(MPI_COMM_WORLD);
-  double t_reduce_start = MPI_Wtime();
+  for (int i = 0; i < send_counts[my_rank]; i++) {
+    cms_update_int(&local_cms, local_items[i], 1);
+  }
 
   CountMinSketch global_cms;
   if (my_rank == 0) {
-    global_cms.depth = local_cms.depth;
-    global_cms.width = local_cms.width;
-    global_cms.total = 0;
-    global_cms.hashFunctions = malloc(global_cms.depth * sizeof(UniversalHash));
-    global_cms.table = malloc(global_cms.depth * sizeof(uint32_t*));
-    for (uint32_t d = 0; d < global_cms.depth; d++) {
-      global_cms.hashFunctions[d] = local_cms.hashFunctions[d];
-      global_cms.table[d] = calloc(global_cms.width, sizeof(uint32_t));
+    if (cms_init(&global_cms, EPSILON, DELTA, PRIME) != 0) {
+      fprintf(stderr, "Error initializing global_cms\n");
+      MPI_Abort(MPI_COMM_WORLD, 5);
     }
+    global_cms.total = 0;
+    for (uint32_t i = 0; i < global_cms.depth; i++)
+      global_cms.hashFunctions[i] = local_cms.hashFunctions[i];
   }
 
   for (uint32_t d = 0; d < local_cms.depth; d++) {
     MPI_Reduce(local_cms.table[d],
                (my_rank == 0 ? global_cms.table[d] : NULL),
-               local_cms.width,
-               MPI_UINT32_T,
-               MPI_SUM,
-               0,
-               MPI_COMM_WORLD);
+               local_cms.width, MPI_UINT32_T,
+               MPI_SUM, 0, MPI_COMM_WORLD);
   }
 
   MPI_Reduce(&local_cms.total,
              (my_rank == 0 ? &global_cms.total : NULL),
-             1, MPI_UINT32_T, MPI_SUM,
-             0, MPI_COMM_WORLD);
+             1, MPI_UINT32_T, MPI_SUM, 0, MPI_COMM_WORLD);
 
-  uint32_t true_123 = 0, true_456 = 0, true_range = 0;
-  MPI_Reduce(&local_123, &true_123, 1, MPI_UINT32_T, MPI_SUM, 0, MPI_COMM_WORLD);
-  MPI_Reduce(&local_456, &true_456, 1, MPI_UINT32_T, MPI_SUM, 0, MPI_COMM_WORLD);
-  MPI_Reduce(&local_range, &true_range, 1, MPI_UINT32_T, MPI_SUM, 0, MPI_COMM_WORLD);
-
-  MPI_Barrier(MPI_COMM_WORLD);
-  double t_reduce_end = MPI_Wtime();
-
-  // ---------------- Benchmark queries + print CMS estimation ----------------
   if (my_rank == 0) {
-    printf("\nTotal elements inserted: %u\n", global_cms.total);
-
     double t_point_start = MPI_Wtime();
-    test_basic_update_query(&global_cms, true_123, true_456);
+    test_basic_update_query(&global_cms, true_A_sum, true_B_sum);
     double t_point_end = MPI_Wtime();
 
     double t_range_start = MPI_Wtime();
-    test_range_query(&global_cms, true_range);
+    test_range_query(&global_cms, true_Range_sum);
     double t_range_end = MPI_Wtime();
 
     double t_inner_start = MPI_Wtime();
@@ -210,16 +150,14 @@ int main(int argc, char* argv[]) {
   }
 
   cms_free(&local_cms);
+  free(local_items);
+  free(send_counts);
+  free(displs);
 
-  MPI_Barrier(MPI_COMM_WORLD);
   double t_end = MPI_Wtime();
-
-  /* ----------- OUTPUT compatibile benchmark script ----------- */
-  if (my_rank == 0) {
+  if (my_rank == 0){
     printf("Total time: %f seconds\n", t_end - t_start);
-    printf("I/O + parsing time: %f s\n", t_io_end - t_io_start);
-    printf("CMS update time: %f s\n", t_update_end - t_update_start);
-    printf("Reduction time: %f s\n", t_reduce_end - t_reduce_start);
+    printf("\n --------------------------------------\n");
   }
 
   MPI_Finalize();

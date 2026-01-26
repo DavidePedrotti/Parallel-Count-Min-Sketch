@@ -5,10 +5,9 @@
 #PBS -q short_HPC4DS
 
 mkdir -p output error
+module load mpich-3.2
 
 cd $PBS_O_WORKDIR
 
-module load mpich-3.2
-
 # Run benchmark
-mpirun.actual -np 2 ./main scripts/dataset_10000_ordered.txt
+mpirun.actual -np 2 ./main data/dataset_1000000_ordered.txt >> output_main.txt
