@@ -37,7 +37,7 @@ int main(int argc, char* argv[]) {
 
   /* Rank 0 reads entire dataset */
   if (my_rank == 0) {
-    printf("Parallel Count-Min Sketch (MAINV1)\n");
+    printf("Parallel Count-Min Sketch (MAINV2)\n");
     FILE* fp = fopen(FILENAME, "r");
     if (!fp) {
       fprintf(stderr, "Rank 0: cannot open file %s\n", FILENAME);

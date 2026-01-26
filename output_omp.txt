@@ -1,0 +1,22 @@
+Parallel Count-Min Sketch (OpenMP only, per-thread private CMS)
+
+ MEMORY USAGE 
+CMS total global: 0.16 MB
+
+ DATASET INFO 
+Dataset file: data/dataset_1000000_ordered.txt
+Dataset size: 3.81 MB
+
+ ITEM ESTIMATIONS 
+Item 123 → estimation: 100590, real: 100431
+Item 456 → estimation: 100029, real: 99883
+Item 999 → estimation: 253 (expected: 0 or small)
+Range 100–110 → estimation: 102129, real: 99924
+
+ TIMINGS 
+Total time V1 full chunk: 0.109601 seconds
+I/O + parsing time: 0.093077 s
+CMS update time: 0.016423 s
+Reduction time: 0.000000 s
+
+ --------------------------------------
