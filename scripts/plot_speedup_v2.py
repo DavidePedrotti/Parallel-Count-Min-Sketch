@@ -10,7 +10,7 @@ def parse_configuration(config_str):
     except:
         return {}
 
-def analyze_csv(csv_path):
+def analyze_csv(csv_path, baseline_time):
     data = pd.read_csv(csv_path)
 
     data['config'] = data['configuration'].apply(parse_configuration)
@@ -24,19 +24,27 @@ def analyze_csv(csv_path):
 
     data = data.sort_values('processes')
 
-    # Since there are multiple rows with the same process count, keep only the row with minimum time
+    # Since there are multiple configurations per process count, select the one with the minimum value
     data = data.loc[data.groupby('processes')['avg_time_taken'].idxmin()]
 
-    baseline = data[data['processes'] == 1]['avg_time_taken'].iloc[0]
-
-    data['speedup'] = baseline / data['avg_time_taken']
+    data['speedup'] = baseline_time / data['avg_time_taken']
     data['efficiency'] = (data['speedup'] / data['processes']) * 100
 
     return data
 
 
-def plot_speedup(csv_files, folder='data', output='speedup_plot.png'):
+def plot_speedup(csv_files, baseline_file, folder='data', output='speedup_plot.png'):
+    baseline_path = os.path.join(folder, baseline_file)
+    if not os.path.exists(baseline_path):
+        raise FileNotFoundError(f"Baseline file not found: {baseline_path}")
+
+    baseline_data = pd.read_csv(baseline_path)
+    baseline_time = baseline_data['avg_time_taken'].iloc[0]
+    print(f"Using baseline time from {baseline_file}: {baseline_time:.2f}s\n")
+
     plt.figure(figsize=(10, 6))
+
+    all_processes = []
 
     for csv_info in csv_files:
         csv_path = os.path.join(folder, csv_info['path'])
@@ -45,25 +53,20 @@ def plot_speedup(csv_files, folder='data', output='speedup_plot.png'):
             print(f"Warning: {csv_path} not found, skipping...")
             continue
 
-        df = analyze_csv(csv_path)
+        df = analyze_csv(csv_path, baseline_time)
 
         label = csv_info['label']
 
         plt.plot(df['processes'], df['speedup'], 'o-',
                 label=label, linewidth=2, markersize=8)
 
+        print(f"{label}:")
         print(f"  Processes: {df['processes'].tolist()}")
         print(f"  Best configs: {df['config_label'].tolist()}")
         print(f"  Times: {df['avg_time_taken'].round(2).tolist()}s")
-        print(f"  Speedup: {df['speedup'].round(2).tolist()}x")
+        print(f"  Speedup: {df['speedup'].round(2).tolist()}x\n")
 
-    all_processes = []
-    for csv_info in csv_files:
-        csv_name = csv_info['path']
-        csv_path = os.path.join(folder, csv_name)
-        if os.path.exists(csv_path):
-            df = analyze_csv(csv_path)
-            all_processes.extend(df['processes'].tolist())
+        all_processes.extend(df['processes'].tolist())
 
     if all_processes:
         max_processes = max(all_processes)
@@ -73,12 +76,13 @@ def plot_speedup(csv_files, folder='data', output='speedup_plot.png'):
 
     plt.xlabel('Number of Processes', fontsize=12)
     plt.ylabel('Speedup', fontsize=12)
-    plt.title('Speedup v2 50M Elements',
+    plt.title('Speedup v1 500M Elements',
               fontsize=14, fontweight='bold')
     plt.legend(fontsize=10)
     plt.grid(True, alpha=0.3)
     plt.xscale('log', base=2)
     plt.yscale('log', base=2)
+    plt.xlim(left=1)
 
     plt.tight_layout()
     plt.savefig(output, dpi=300, bbox_inches='tight')
@@ -88,12 +92,13 @@ def plot_speedup(csv_files, folder='data', output='speedup_plot.png'):
 
 if __name__ == "__main__":
     csv_files = [
-        {'path': 'benchmark_results_50000000_v2_pack.csv', 'label': 'Pack'},
-        {'path': 'benchmark_results_50000000_v2_packexcl.csv', 'label': 'PackExcl'},
-        {'path': 'benchmark_results_50000000_v2_scatter.csv', 'label': 'Scatter'},
-        {'path': 'benchmark_results_50000000_v2_scatterexcl.csv', 'label': 'ScatterExcl'},
+        {'path': 'benchmark_results_500m_v1_pack.csv', 'label': 'Pack'},
+        {'path': 'benchmark_results_500m_v1_packexcl.csv', 'label': 'PackExcl'},
+        {'path': 'benchmark_results_500m_v1_scatter.csv', 'label': 'Scatter'},
+        {'path': 'benchmark_results_500m_v1_scatterexcl.csv', 'label': 'ScatterExcl'},
     ]
 
+    baseline_file = 'benchmark_results_500m_linear.csv'
     folder = '../csv_results/'
 
-    plot_speedup(csv_files, folder=folder, output='speedup_plot_v2.png')
+    plot_speedup(csv_files, baseline_file, folder=folder, output='speedup_plot_500m_v1.png')

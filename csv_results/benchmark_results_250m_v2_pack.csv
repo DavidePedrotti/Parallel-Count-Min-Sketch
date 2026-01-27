@@ -1,11 +1,11 @@
 configuration,mode,avg_time_taken,avg_point_query,avg_range_query,avg_inner_product
-"{'chunks': 1, 'cores_per_chunk': 1, 'mode': 'pack', 'processes': 1}",pack,26.8719827,2.3500000000000002e-05,3.4e-06,2.4700000000000004e-05
-"{'chunks': 1, 'cores_per_chunk': 2, 'mode': 'pack', 'processes': 2}",pack,21.787846000000005,2.4e-05,3.8e-06,2.86e-05
-"{'chunks': 2, 'cores_per_chunk': 1, 'mode': 'pack', 'processes': 2}",pack,23.6527461,2.5e-05,4e-06,2.9099999999999996e-05
-"{'chunks': 1, 'cores_per_chunk': 4, 'mode': 'pack', 'processes': 4}",pack,18.4817097,2.1799999999999998e-05,3.6999999999999997e-06,2.4800000000000007e-05
-"{'chunks': 4, 'cores_per_chunk': 1, 'mode': 'pack', 'processes': 4}",pack,19.4161738,2.4999999999999994e-05,3.5999999999999994e-06,2.8000000000000003e-05
-"{'chunks': 2, 'cores_per_chunk': 4, 'mode': 'pack', 'processes': 8}",pack,20.404647800000003,2.81e-05,4e-06,2.9199999999999998e-05
-"{'chunks': 4, 'cores_per_chunk': 4, 'mode': 'pack', 'processes': 16}",pack,20.548582500000002,4.95e-05,1.2000000000000004e-05,3.0500000000000003e-05
-"{'chunks': 4, 'cores_per_chunk': 8, 'mode': 'pack', 'processes': 32}",pack,18.7892587,2.2899999999999994e-05,4.000000000000001e-06,2.7e-05
-"{'chunks': 8, 'cores_per_chunk': 4, 'mode': 'pack', 'processes': 32}",pack,18.3341796,2.28e-05,4.1e-06,2.79e-05
-"{'chunks': 8, 'cores_per_chunk': 8, 'mode': 'pack', 'processes': 64}",pack,16.602119899999998,2.2499999999999998e-05,4.700000000000001e-06,2.75e-05
+"{'chunks': 8, 'cores_per_chunk': 8, 'mode': 'pack', 'processes': 64}",pack,7.4143102999999995,0,0,0
+"{'chunks': 8, 'cores_per_chunk': 4, 'mode': 'pack', 'processes': 32}",pack,8.686095900000002,0,0,0
+"{'chunks': 4, 'cores_per_chunk': 8, 'mode': 'pack', 'processes': 32}",pack,10.854616699999998,0,0,0
+"{'chunks': 4, 'cores_per_chunk': 4, 'mode': 'pack', 'processes': 16}",pack,9.863501000000001,0,0,0
+"{'chunks': 2, 'cores_per_chunk': 4, 'mode': 'pack', 'processes': 8}",pack,13.124092,0,0,0
+"{'chunks': 4, 'cores_per_chunk': 1, 'mode': 'pack', 'processes': 4}",pack,11.1948943,0,0,0
+"{'chunks': 1, 'cores_per_chunk': 4, 'mode': 'pack', 'processes': 4}",pack,11.213639699999998,0,0,0
+"{'chunks': 2, 'cores_per_chunk': 1, 'mode': 'pack', 'processes': 2}",pack,17.6236421,0,0,0
+"{'chunks': 1, 'cores_per_chunk': 2, 'mode': 'pack', 'processes': 2}",pack,16.5313609,0,0,0
+"{'chunks': 1, 'cores_per_chunk': 1, 'mode': 'pack', 'processes': 1}",pack,29.458710800000006,0,0,0

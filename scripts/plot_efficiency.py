@@ -1,5 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+import numpy as np
 import os
 import ast
 
@@ -9,7 +10,7 @@ def parse_configuration(config_str):
     except:
         return {}
 
-def analyze_csv(csv_path):
+def analyze_csv(csv_path, baseline_time):
     data = pd.read_csv(csv_path)
 
     data['config'] = data['configuration'].apply(parse_configuration)
@@ -25,16 +26,24 @@ def analyze_csv(csv_path):
 
     data = data.loc[data.groupby('processes')['avg_time_taken'].idxmin()]
 
-    baseline = data[data['processes'] == 1]['avg_time_taken'].iloc[0]
-
-    data['speedup'] = baseline / data['avg_time_taken']
+    data['speedup'] = baseline_time / data['avg_time_taken']
     data['efficiency'] = (data['speedup'] / data['processes']) * 100
 
     return data
 
 
-def plot_efficiency(csv_files, folder='data', output='efficiency_plot.png'):
+def plot_efficiency(csv_files, baseline_file, folder='data', output='efficiency_plot.png'):
+    baseline_path = os.path.join(folder, baseline_file)
+    if not os.path.exists(baseline_path):
+        raise FileNotFoundError(f"Baseline file not found: {baseline_path}")
+
+    baseline_data = pd.read_csv(baseline_path)
+    baseline_time = baseline_data['avg_time_taken'].iloc[0]
+    print(f"Using baseline time from {baseline_file}: {baseline_time:.2f}s\n")
+
     plt.figure(figsize=(10, 6))
+
+    all_processes = []
 
     for csv_info in csv_files:
         csv_path = os.path.join(folder, csv_info['path'])
@@ -43,43 +52,53 @@ def plot_efficiency(csv_files, folder='data', output='efficiency_plot.png'):
             print(f"Warning: {csv_path} not found, skipping...")
             continue
 
-        df = analyze_csv(csv_path)
+        df = analyze_csv(csv_path, baseline_time)
 
         label = csv_info['label']
 
         plt.plot(df['processes'], df['efficiency'], 'o-',
                 label=label, linewidth=2, markersize=8)
 
+        print(f"{label}:")
         print(f"  Processes: {df['processes'].tolist()}")
         print(f"  Best configs: {df['config_label'].tolist()}")
         print(f"  Times: {df['avg_time_taken'].round(2).tolist()}s")
-        print(f"  Efficiency: {df['efficiency'].round(1).tolist()}%")
+        print(f"  Speedup: {df['speedup'].round(2).tolist()}x")
+        print(f"  Efficiency: {df['efficiency'].round(2).tolist()}%\n")
 
-    plt.axhline(y=100, color='k', linestyle='--', alpha=0.5,
+        all_processes.extend(df['processes'].tolist())
+
+    if all_processes:
+        max_processes = max(all_processes)
+        ideal_x = np.array([1, max_processes])
+        plt.plot(ideal_x, [100, 100], 'k--', alpha=0.5,
                 label='Ideal (100%)', linewidth=2)
 
     plt.xlabel('Number of Processes', fontsize=12)
     plt.ylabel('Efficiency (%)', fontsize=12)
-    plt.title('Efficiency v3 500M Elements',
+    plt.title('Efficiency v1 1000M Elements',
               fontsize=14, fontweight='bold')
     plt.legend(fontsize=10)
     plt.grid(True, alpha=0.3)
     plt.xscale('log', base=2)
-    plt.ylim(0, 110)
+    plt.xlim(left=1)
+    plt.ylim(bottom=0, top=110)
 
     plt.tight_layout()
     plt.savefig(output, dpi=300, bbox_inches='tight')
     print(f"\nPlot saved to: {output}")
     plt.show()
 
+
 if __name__ == "__main__":
     csv_files = [
-        {'path': 'benchmark_results_500000000_v3_pack.csv', 'label': 'Pack'},
-        {'path': 'benchmark_results_500000000_v3_packexcl.csv', 'label': 'PackExcl'},
-        {'path': 'benchmark_results_500000000_v3_scatter.csv', 'label': 'Scatter'},
-        {'path': 'benchmark_results_500000000_v3_scatterexcl.csv', 'label': 'ScatterExcl'},
+        {'path': 'benchmark_results_1000m_v1_pack.csv', 'label': 'Pack'},
+        {'path': 'benchmark_results_1000m_v1_packexcl.csv', 'label': 'PackExcl'},
+        {'path': 'benchmark_results_1000m_v1_scatter.csv', 'label': 'Scatter'},
+        {'path': 'benchmark_results_1000m_v1_scatterexcl.csv', 'label': 'ScatterExcl'},
     ]
 
+    baseline_file = 'benchmark_results_1000m_linear.csv'
     folder = '../csv_results/'
 
-    plot_efficiency(csv_files, folder=folder, output='efficiency_plot_v3.png')
+    plot_efficiency(csv_files, baseline_file, folder=folder, output='efficiency_plot_1000m_v1.png')

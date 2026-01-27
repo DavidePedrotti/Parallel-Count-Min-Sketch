@@ -1,11 +1,11 @@
 configuration,mode,avg_time_taken,avg_point_query,avg_range_query,avg_inner_product
-"{'chunks': 1, 'cores_per_chunk': 1, 'mode': 'pack', 'processes': 1}",pack,116.60146339999999,2.7700000000000006e-05,4.000000000000001e-06,2.5600000000000006e-05
-"{'chunks': 1, 'cores_per_chunk': 2, 'mode': 'pack', 'processes': 2}",pack,92.8037747,2.4100000000000003e-05,3.7999999999999996e-06,2.6900000000000003e-05
-"{'chunks': 2, 'cores_per_chunk': 1, 'mode': 'pack', 'processes': 2}",pack,101.0751899,2.7700000000000002e-05,4.1e-06,2.79e-05
-"{'chunks': 1, 'cores_per_chunk': 4, 'mode': 'pack', 'processes': 4}",pack,79.66427080000001,2.46e-05,3.7999999999999996e-06,2.5400000000000004e-05
-"{'chunks': 4, 'cores_per_chunk': 1, 'mode': 'pack', 'processes': 4}",pack,78.4877726,2.03e-05,3.8e-06,2.6900000000000003e-05
-"{'chunks': 2, 'cores_per_chunk': 4, 'mode': 'pack', 'processes': 8}",pack,79.7433038,2.35e-05,4e-06,2.6799999999999994e-05
-"{'chunks': 4, 'cores_per_chunk': 4, 'mode': 'pack', 'processes': 16}",pack,76.2998278,2.48e-05,4.1e-06,2.97e-05
-"{'chunks': 4, 'cores_per_chunk': 8, 'mode': 'pack', 'processes': 32}",pack,82.02428979999999,3.0900000000000006e-05,4.6e-06,3.11e-05
-"{'chunks': 8, 'cores_per_chunk': 4, 'mode': 'pack', 'processes': 32}",pack,84.3570193,8.320000000000002e-05,2.19e-05,3.21e-05
-"{'chunks': 8, 'cores_per_chunk': 8, 'mode': 'pack', 'processes': 64}",pack,68.3743387,2.71e-05,5.4e-06,2.9299999999999997e-05
+"{'chunks': 8, 'cores_per_chunk': 8, 'mode': 'pack', 'processes': 64}",pack,24.4735402,0,0,0
+"{'chunks': 8, 'cores_per_chunk': 4, 'mode': 'pack', 'processes': 32}",pack,26.9798251,0,0,0
+"{'chunks': 4, 'cores_per_chunk': 8, 'mode': 'pack', 'processes': 32}",pack,28.077438500000007,0,0,0
+"{'chunks': 4, 'cores_per_chunk': 4, 'mode': 'pack', 'processes': 16}",pack,26.5756975,0,0,0
+"{'chunks': 2, 'cores_per_chunk': 4, 'mode': 'pack', 'processes': 8}",pack,27.3611625,0,0,0
+"{'chunks': 4, 'cores_per_chunk': 1, 'mode': 'pack', 'processes': 4}",pack,37.50799579999999,0,0,0
+"{'chunks': 1, 'cores_per_chunk': 4, 'mode': 'pack', 'processes': 4}",pack,36.340244999999996,0,0,0
+"{'chunks': 2, 'cores_per_chunk': 1, 'mode': 'pack', 'processes': 2}",pack,58.8709267,0,0,0
+"{'chunks': 1, 'cores_per_chunk': 2, 'mode': 'pack', 'processes': 2}",pack,56.10100630000001,0,0,0
+"{'chunks': 1, 'cores_per_chunk': 1, 'mode': 'pack', 'processes': 1}",pack,58.7821676,0,0,0

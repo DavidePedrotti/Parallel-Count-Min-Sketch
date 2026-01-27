@@ -1,11 +1,11 @@
 configuration,mode,avg_time_taken,avg_point_query,avg_range_query,avg_inner_product
-"{'chunks': 1, 'cores_per_chunk': 1, 'mode': 'scatter', 'processes': 1}",scatter,29.6678022,2.76e-05,3.8e-06,2.9900000000000002e-05
-"{'chunks': 1, 'cores_per_chunk': 2, 'mode': 'scatter', 'processes': 2}",scatter,23.7121382,2.4200000000000002e-05,3.6999999999999993e-06,2.6000000000000002e-05
-"{'chunks': 2, 'cores_per_chunk': 1, 'mode': 'scatter', 'processes': 2}",scatter,23.4896223,2.5500000000000003e-05,4.1000000000000006e-06,2.9000000000000007e-05
-"{'chunks': 1, 'cores_per_chunk': 4, 'mode': 'scatter', 'processes': 4}",scatter,18.4806051,2.1799999999999998e-05,3.5000000000000004e-06,2.5799999999999997e-05
-"{'chunks': 4, 'cores_per_chunk': 1, 'mode': 'scatter', 'processes': 4}",scatter,23.004514699999998,2.7299999999999996e-05,4.700000000000001e-06,2.7999999999999996e-05
-"{'chunks': 2, 'cores_per_chunk': 4, 'mode': 'scatter', 'processes': 8}",scatter,18.55231,2.2299999999999997e-05,3.6999999999999997e-06,2.6300000000000006e-05
-"{'chunks': 4, 'cores_per_chunk': 4, 'mode': 'scatter', 'processes': 16}",scatter,16.9341266,1.92e-05,3.5000000000000004e-06,2.4900000000000002e-05
-"{'chunks': 4, 'cores_per_chunk': 8, 'mode': 'scatter', 'processes': 32}",scatter,17.801524800000003,2.63e-05,4.499999999999999e-06,2.7e-05
-"{'chunks': 8, 'cores_per_chunk': 4, 'mode': 'scatter', 'processes': 32}",scatter,16.728349599999994,2.28e-05,3.5000000000000004e-06,2.5100000000000004e-05
-"{'chunks': 8, 'cores_per_chunk': 8, 'mode': 'scatter', 'processes': 64}",scatter,17.6303048,2.24e-05,4.5e-06,2.49e-05
+"{'chunks': 8, 'cores_per_chunk': 8, 'mode': 'scatter', 'processes': 64}",scatter,5.650135,0,0,0
+"{'chunks': 8, 'cores_per_chunk': 4, 'mode': 'scatter', 'processes': 32}",scatter,4.513275,0,0,0
+"{'chunks': 4, 'cores_per_chunk': 8, 'mode': 'scatter', 'processes': 32}",scatter,11.607092499999998,0,0,0
+"{'chunks': 4, 'cores_per_chunk': 4, 'mode': 'scatter', 'processes': 16}",scatter,9.1760763,0,0,0
+"{'chunks': 2, 'cores_per_chunk': 4, 'mode': 'scatter', 'processes': 8}",scatter,11.544735200000002,0,0,0
+"{'chunks': 4, 'cores_per_chunk': 1, 'mode': 'scatter', 'processes': 4}",scatter,10.848123199999998,0,0,0
+"{'chunks': 1, 'cores_per_chunk': 4, 'mode': 'scatter', 'processes': 4}",scatter,12.2335602,0,0,0
+"{'chunks': 2, 'cores_per_chunk': 1, 'mode': 'scatter', 'processes': 2}",scatter,17.7152002,0,0,0
+"{'chunks': 1, 'cores_per_chunk': 2, 'mode': 'scatter', 'processes': 2}",scatter,17.571932500000003,0,0,0
+"{'chunks': 1, 'cores_per_chunk': 1, 'mode': 'scatter', 'processes': 1}",scatter,30.835355600000003,0,0,0
