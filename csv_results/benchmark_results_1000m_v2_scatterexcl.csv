@@ -1,11 +1,11 @@
 configuration,mode,avg_time_taken,avg_point_query,avg_range_query,avg_inner_product
-"{'chunks': 8, 'cores_per_chunk': 8, 'mode': 'scatter:excl', 'processes': 64}",scatter:excl,13.7529393,0,0,0
-"{'chunks': 8, 'cores_per_chunk': 4, 'mode': 'scatter:excl', 'processes': 32}",scatter:excl,12.727042399999998,0,0,0
-"{'chunks': 4, 'cores_per_chunk': 8, 'mode': 'scatter:excl', 'processes': 32}",scatter:excl,15.128058800000002,0,0,0
-"{'chunks': 4, 'cores_per_chunk': 4, 'mode': 'scatter:excl', 'processes': 16}",scatter:excl,18.558846299999995,0,0,0
-"{'chunks': 2, 'cores_per_chunk': 4, 'mode': 'scatter:excl', 'processes': 8}",scatter:excl,24.943098699999997,0,0,0
-"{'chunks': 4, 'cores_per_chunk': 1, 'mode': 'scatter:excl', 'processes': 4}",scatter:excl,37.14720770000001,0,0,0
-"{'chunks': 1, 'cores_per_chunk': 4, 'mode': 'scatter:excl', 'processes': 4}",scatter:excl,39.2715399,0,0,0
-"{'chunks': 2, 'cores_per_chunk': 1, 'mode': 'scatter:excl', 'processes': 2}",scatter:excl,53.28837120000001,0,0,0
-"{'chunks': 1, 'cores_per_chunk': 2, 'mode': 'scatter:excl', 'processes': 2}",scatter:excl,57.92567180000001,0,0,0
 "{'chunks': 1, 'cores_per_chunk': 1, 'mode': 'scatter:excl', 'processes': 1}",scatter:excl,61.0182257,0,0,0
+"{'chunks': 1, 'cores_per_chunk': 2, 'mode': 'scatter:excl', 'processes': 2}",scatter:excl,57.92567180000001,0,0,0
+"{'chunks': 2, 'cores_per_chunk': 1, 'mode': 'scatter:excl', 'processes': 2}",scatter:excl,53.28837120000001,0,0,0
+"{'chunks': 1, 'cores_per_chunk': 4, 'mode': 'scatter:excl', 'processes': 4}",scatter:excl,39.2715399,0,0,0
+"{'chunks': 4, 'cores_per_chunk': 1, 'mode': 'scatter:excl', 'processes': 4}",scatter:excl,37.14720770000001,0,0,0
+"{'chunks': 2, 'cores_per_chunk': 4, 'mode': 'scatter:excl', 'processes': 8}",scatter:excl,24.943098699999997,0,0,0
+"{'chunks': 4, 'cores_per_chunk': 4, 'mode': 'scatter:excl', 'processes': 16}",scatter:excl,18.558846299999995,0,0,0
+"{'chunks': 4, 'cores_per_chunk': 8, 'mode': 'scatter:excl', 'processes': 32}",scatter:excl,15.128058800000002,0,0,0
+"{'chunks': 8, 'cores_per_chunk': 4, 'mode': 'scatter:excl', 'processes': 32}",scatter:excl,12.727042399999998,0,0,0
+"{'chunks': 8, 'cores_per_chunk': 8, 'mode': 'scatter:excl', 'processes': 64}",scatter:excl,13.7529393,0,0,0

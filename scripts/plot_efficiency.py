@@ -76,7 +76,7 @@ def plot_efficiency(csv_files, baseline_file, folder='data', output='efficiency_
 
     plt.xlabel('Number of Processes', fontsize=12)
     plt.ylabel('Efficiency (%)', fontsize=12)
-    plt.title('Efficiency v1 1000M Elements',
+    plt.title('Efficiency v2 250M Elements',
               fontsize=14, fontweight='bold')
     plt.legend(fontsize=10)
     plt.grid(True, alpha=0.3)
@@ -92,13 +92,13 @@ def plot_efficiency(csv_files, baseline_file, folder='data', output='efficiency_
 
 if __name__ == "__main__":
     csv_files = [
-        {'path': 'benchmark_results_1000m_v1_pack.csv', 'label': 'Pack'},
-        {'path': 'benchmark_results_1000m_v1_packexcl.csv', 'label': 'PackExcl'},
-        {'path': 'benchmark_results_1000m_v1_scatter.csv', 'label': 'Scatter'},
-        {'path': 'benchmark_results_1000m_v1_scatterexcl.csv', 'label': 'ScatterExcl'},
+        {'path': 'benchmark_results_250m_v2_pack.csv', 'label': 'Pack'},
+        {'path': 'benchmark_results_250m_v2_packexcl.csv', 'label': 'PackExcl'},
+        {'path': 'benchmark_results_250m_v2_scatter.csv', 'label': 'Scatter'},
+        {'path': 'benchmark_results_250m_v2_scatterexcl.csv', 'label': 'ScatterExcl'},
     ]
 
-    baseline_file = 'benchmark_results_1000m_linear.csv'
+    baseline_file = 'benchmark_results_250m_linear.csv'
     folder = '../csv_results/'
 
-    plot_efficiency(csv_files, baseline_file, folder=folder, output='efficiency_plot_1000m_v1.png')
+    plot_efficiency(csv_files, baseline_file, folder=folder, output='efficiency_plot_250m_v2.png')
