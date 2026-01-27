@@ -212,7 +212,7 @@ int main(int argc, char* argv[]) {
         double ip_end = MPI_Wtime();
 
         printf("\n--- TIMINGS ---\n");
-        printf("Total time V2 full chunk: %f seconds\n", t_reduce_end - t_start);
+        printf("Total time: %f seconds\n", t_reduce_end - t_start);
         printf("I/O + parsing time: %f s\n", t_io_end - t_io_start);
         printf("CMS update time: %f s\n", t_update_end - t_update_start);
         printf("Reduction time: %f s\n", t_reduce_end - t_reduce_start);
