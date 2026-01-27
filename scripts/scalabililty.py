@@ -96,7 +96,7 @@ def create_matrix_table(dataset_configs, folder='data', output='matrix_table.png
         efficiency_row = []
         for proc in processes:
             if proc in best_results[size]:
-                efficiency_row.append(f"{best_results[size][proc]['efficiency']:.1f}")
+                efficiency_row.append(f"{best_results[size][proc]['efficiency']:.2f}")
             else:
                 efficiency_row.append("-")
         table_data.append(efficiency_row)
@@ -136,7 +136,7 @@ def create_matrix_table(dataset_configs, folder='data', output='matrix_table.png
             table[(i+1, -1)].set_text_props(weight='bold', color='white')
 
 
-    ax.set_title('Scalability v1: Best Speedup (S) and Efficiency (E) per Process Number',
+    ax.set_title('Scalability v2: Best Speedup (S) and Efficiency (E) per Process Number',
                  fontsize=14, fontweight='bold', pad=20)
 
     plt.tight_layout()
@@ -152,30 +152,30 @@ if __name__ == "__main__":
         {
             'size': '250M',
             'csv_files': [
-                {'path': 'benchmark_results_250m_v1_pack.csv', 'label': 'Pack'},
-                {'path': 'benchmark_results_250m_v1_packexcl.csv', 'label': 'PackExcl'},
-                {'path': 'benchmark_results_250m_v1_scatter.csv', 'label': 'Scatter'},
-                {'path': 'benchmark_results_250m_v1_scatterexcl.csv', 'label': 'ScatterExcl'},
+                {'path': 'benchmark_results_250m_v2_pack.csv', 'label': 'Pack'},
+                {'path': 'benchmark_results_250m_v2_packexcl.csv', 'label': 'PackExcl'},
+                {'path': 'benchmark_results_250m_v2_scatter.csv', 'label': 'Scatter'},
+                {'path': 'benchmark_results_250m_v2_scatterexcl.csv', 'label': 'ScatterExcl'},
             ],
             'baseline_file': 'benchmark_results_250m_linear.csv'
         },
         {
             'size': '500M',
             'csv_files': [
-                {'path': 'benchmark_results_500m_v1_pack.csv', 'label': 'Pack'},
-                {'path': 'benchmark_results_500m_v1_packexcl.csv', 'label': 'PackExcl'},
-                {'path': 'benchmark_results_500m_v1_scatter.csv', 'label': 'Scatter'},
-                {'path': 'benchmark_results_500m_v1_scatterexcl.csv', 'label': 'ScatterExcl'},
+                {'path': 'benchmark_results_500m_v2_pack.csv', 'label': 'Pack'},
+                {'path': 'benchmark_results_500m_v2_packexcl.csv', 'label': 'PackExcl'},
+                {'path': 'benchmark_results_500m_v2_scatter.csv', 'label': 'Scatter'},
+                {'path': 'benchmark_results_500m_v2_scatterexcl.csv', 'label': 'ScatterExcl'},
             ],
             'baseline_file': 'benchmark_results_500m_linear.csv'
         },
         {
             'size': '1000M',
             'csv_files': [
-                {'path': 'benchmark_results_1000m_v1_pack.csv', 'label': 'Pack'},
-                {'path': 'benchmark_results_1000m_v1_packexcl.csv', 'label': 'PackExcl'},
-                {'path': 'benchmark_results_1000m_v1_scatter.csv', 'label': 'Scatter'},
-                {'path': 'benchmark_results_1000m_v1_scatterexcl.csv', 'label': 'ScatterExcl'},
+                {'path': 'benchmark_results_1000m_v2_pack.csv', 'label': 'Pack'},
+                {'path': 'benchmark_results_1000m_v2_packexcl.csv', 'label': 'PackExcl'},
+                {'path': 'benchmark_results_1000m_v2_scatter.csv', 'label': 'Scatter'},
+                {'path': 'benchmark_results_1000m_v2_scatterexcl.csv', 'label': 'ScatterExcl'},
             ],
             'baseline_file': 'benchmark_results_1000m_linear.csv'
         }
@@ -183,4 +183,4 @@ if __name__ == "__main__":
 
     folder = '../csv_results/'
 
-    create_matrix_table(dataset_configs, folder=folder, output='scalability_table_v1.png')
+    create_matrix_table(dataset_configs, folder=folder, output='scalability_table_v2.png')
