@@ -7,6 +7,10 @@
 
 #include "count_min_sketch.h"
 
+/*
+ * Linear CMS version
+ */
+
 int main(int argc, char* argv[]) {
   MPI_Init(&argc, &argv);
 
@@ -20,7 +24,10 @@ int main(int argc, char* argv[]) {
   }
 
   const char* FILENAME = argv[1];
+  const char* FOLDER = argv[2];
 
+  uint32_t* all_items = NULL;
+  uint64_t total_items = 0;
   uint32_t true_A_sum = 0, true_B_sum = 0, true_Range_sum = 0;
 
   FILE* fp = fopen(FILENAME, "r");
@@ -29,17 +36,61 @@ int main(int argc, char* argv[]) {
     return 2;
   }
 
-  // Update CMS while reading file
+  // Conta righe
   char line[64];
+  while (fgets(line, sizeof(line), fp)) total_items++;
+  rewind(fp);
+
+  all_items = malloc(total_items * sizeof(uint32_t));
+  if (!all_items) {
+    fprintf(stderr, "Rank 0: malloc failed\n");
+    return 3;
+  }
+
+  uint64_t idx = 0;
   while (fgets(line, sizeof(line), fp)) {
     uint32_t v = (uint32_t)atoi(line);
-    cms_update_int(&cms, v, 1);
+    all_items[idx++] = v;
 
     if (v == 123) true_A_sum++;
     if (v == 456) true_B_sum++;
     if (v >= 100 && v <= 110) true_Range_sum++;
   }
   fclose(fp);
+
+  // Aggiorno CMS locale
+  for (int i = 0; i < total_items; i++) {
+    cms_update_int(&cms, all_items[i], 1);
+  }
+
+  double t_before_accuracy = MPI_Wtime();
+
+  const char* base_filename = strrchr(FILENAME, '/');
+  base_filename = base_filename ? base_filename + 1 : FILENAME;  // base_filename+1 moves past '/'
+  char total_count_filename[100];
+  snprintf(total_count_filename, sizeof(total_count_filename), "%s/total_%s", FOLDER, base_filename);
+
+  // Count unique values from ground truth file
+  uint32_t n_unique = count_lines(total_count_filename);
+  if (n_unique == 0) {
+    fprintf(stderr, "Error: cannot load the ground truth file %s\n", total_count_filename);
+    cms_free(&cms);
+    free(all_items);
+    MPI_Finalize();
+    return 4;
+  }
+
+  RealCount* count = load_count(total_count_filename, n_unique);
+  if (!count) {
+    fprintf(stderr, "Error: cannot load the ground truth file %s\n", total_count_filename);
+    cms_free(&cms);
+    free(all_items);
+    MPI_Finalize();
+    return 4;
+  }
+
+  test_cms_accuracy(&cms, count, n_unique, total_items);
+  double t_after_accuracy = MPI_Wtime();
 
   // Point Query Test
   double t_point_start = MPI_Wtime();
@@ -55,7 +106,6 @@ int main(int argc, char* argv[]) {
   double t_inner_start = MPI_Wtime();
   uint64_t inner_prod = cms_inner_product(&cms, &cms);
   double t_inner_end = MPI_Wtime();
-
   printf("\nInner Product Test\n");
   printf("Inner product (self): %lu\n", (unsigned long)inner_prod);
 
@@ -66,8 +116,11 @@ int main(int argc, char* argv[]) {
 
   cms_free(&cms);
 
+  free(all_items);
+
   double t_end = MPI_Wtime();
-  printf("Total time: %f seconds\n", t_point_start - t_start);
+  printf("Total time: %f seconds\n", t_before_accuracy - t_start);
+  printf("Total time taken for accuracy test: %.2f seconds\n", t_after_accuracy - t_before_accuracy);
   printf("Total execution time: %.2f seconds\n", t_end - t_start);
 
   MPI_Finalize();
