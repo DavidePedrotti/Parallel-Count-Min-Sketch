@@ -1,17 +1,13 @@
 #!/bin/bash
-#PBS -N cms_omp_benchmark
+#PBS -N cms_benchmark
 #PBS -l select=1:ncpus=8:mem=2gb
 #PBS -l place=pack:excl
 #PBS -l walltime=0:20:00
 #PBS -q short_cpuQ
 
 cd $PBS_O_WORKDIR
-
-# module load gcc
-
+module load mpich-3.2
 export OMP_NUM_THREADS=4
-export OMP_PROC_BIND=close
-export OMP_PLACES=cores
 
 # Array dei dataset
 datasets=(
@@ -22,10 +18,11 @@ datasets=(
     data/dataset_1000000000_ordered.txt
 )
 
-output_file="output_omp.txt"
+# File unico per l'output
+output_file="output_V3.txt"
 
 # Loop sui dataset
 for dataset in "${datasets[@]}"; do
-    echo "Running openmp_only on $dataset ..." >> "$output_file"
-    ./openmp_only "$dataset" >> "$output_file" 2>&1
+    echo "Running hybridV3 on $dataset ..." >> "$output_file"
+    mpirun.actual -n 2 ./hybridV3 "$dataset" >> "$output_file" 2>&1
 done

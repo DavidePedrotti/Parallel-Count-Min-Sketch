@@ -1,3 +1,96 @@
+Running hybridV2 on data/dataset_10000_ordered.txt ...
+Parallel Count-Min Sketch (Version 2: Hybrid MPI + OpenMP, shared CMS)
+
+ MEMORY USAGE 
+CMS total global: 0.06 MB
+
+ DATASET INFO 
+Dataset file: data/dataset_10000_ordered.txt
+Dataset size: 0.04 MB
+
+ ITEM ESTIMATIONS 
+Item 123 → estimation: 990, real: 989
+Item 456 → estimation: 1015, real: 1014
+Item 999 → estimation: 2 (expected: 0 or small)
+Range 100–110 → estimation: 968, real: 957
+
+ TIMINGS 
+Total time V2 full chunk: 0.009909 seconds
+I/O + parsing time: 0.008158 s
+CMS update time: 0.001601 s
+Reduction time: 0.000059 s
+
+ --------------------------------------
+Running hybridV2 on data/dataset_1000000_ordered.txt ...
+Parallel Count-Min Sketch (Version 2: Hybrid MPI + OpenMP, shared CMS)
+
+ MEMORY USAGE 
+CMS total global: 0.06 MB
+
+ DATASET INFO 
+Dataset file: data/dataset_1000000_ordered.txt
+Dataset size: 4.48 MB
+
+ ITEM ESTIMATIONS 
+Item 123 → estimation: 100587, real: 100431
+Item 456 → estimation: 100124, real: 99883
+Item 999 → estimation: 214 (expected: 0 or small)
+Range 100–110 → estimation: 101799, real: 99924
+
+ TIMINGS 
+Total time V2 full chunk: 0.266652 seconds
+I/O + parsing time: 0.135352 s
+CMS update time: 0.131128 s
+Reduction time: 0.000060 s
+
+ --------------------------------------
+Running hybridV2 on data/dataset_10000000_ordered.txt ...
+Parallel Count-Min Sketch (Version 2: Hybrid MPI + OpenMP, shared CMS)
+
+ MEMORY USAGE 
+CMS total global: 0.06 MB
+
+ DATASET INFO 
+Dataset file: data/dataset_10000000_ordered.txt
+Dataset size: 44.82 MB
+
+ ITEM ESTIMATIONS 
+Item 123 → estimation: 1000728, real: 998459
+Item 456 → estimation: 1001367, real: 1000564
+Item 999 → estimation: 1604 (expected: 0 or small)
+Range 100–110 → estimation: 1018481, real: 999220
+
+ TIMINGS 
+Total time V2 full chunk: 1.357928 seconds
+I/O + parsing time: 0.685115 s
+CMS update time: 0.672615 s
+Reduction time: 0.000092 s
+
+ --------------------------------------
+Running hybridV2 on data/dataset_100000000_ordered.txt ...
+Parallel Count-Min Sketch (Version 2: Hybrid MPI + OpenMP, shared CMS)
+
+ MEMORY USAGE 
+CMS total global: 0.06 MB
+
+ DATASET INFO 
+Dataset file: data/dataset_100000000_ordered.txt
+Dataset size: 448.22 MB
+
+ ITEM ESTIMATIONS 
+Item 123 → estimation: 10023048, real: 9999525
+Item 456 → estimation: 10020730, real: 10005294
+Item 999 → estimation: 31073 (expected: 0 or small)
+Range 100–110 → estimation: 10242685, real: 10001909
+
+ TIMINGS 
+Total time V2 full chunk: 14.334140 seconds
+I/O + parsing time: 4.386161 s
+CMS update time: 9.947740 s
+Reduction time: 0.000098 s
+
+ --------------------------------------
+Running hybridV2 on data/dataset_1000000000_ordered.txt ...
 Parallel Count-Min Sketch (Version 2: Hybrid MPI + OpenMP, shared CMS)
 
  MEMORY USAGE 
@@ -8,15 +101,15 @@ Dataset file: data/dataset_1000000000_ordered.txt
 Dataset size: 4482.27 MB
 
  ITEM ESTIMATIONS 
-Item 123 → estimation: 100150162, real: 99994029
-Item 456 → estimation: 100090656, real: 100013056
-Item 999 → estimation: 155253 (expected: 0 or small)
-Range 100–110 → estimation: 101393515, real: 99994707
+Item 123 → estimation: 100148891, real: 99994029
+Item 456 → estimation: 100168330, real: 100013056
+Item 999 → estimation: 155563 (expected: 0 or small)
+Range 100–110 → estimation: 101393683, real: 99994707
 
  TIMINGS 
-Total time V2 full chunk: 214.650585 seconds
-I/O + parsing time: 50.694747 s
-CMS update time: 163.955538 s
-Reduction time: 0.000172 s
+Total time V2 full chunk: 100.193775 seconds
+I/O + parsing time: 39.784406 s
+CMS update time: 60.409167 s
+Reduction time: 0.000093 s
 
  --------------------------------------

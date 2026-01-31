@@ -227,7 +227,7 @@ int main(int argc, char* argv[]) {
                cms_range_query_int(&global_cms, 100, 110), true_range);
 
         printf("\n TIMINGS \n");
-        printf("Total time V2 full chunk: %f seconds\n",
+        printf("Total time: %f seconds\n",
                t_reduce_end - t_start);
         printf("I/O + parsing time: %f s\n", t_io_end - t_io_start);
         printf("CMS update time: %f s\n", t_update_end - t_update_start);

@@ -1,3 +1,92 @@
+Running openmp_only on data/dataset_10000_ordered.txt ...
+Parallel Count-Min Sketch (OpenMP only, per-thread private CMS)
+
+ MEMORY USAGE 
+CMS total global: 0.16 MB
+
+ DATASET INFO 
+Dataset file: data/dataset_10000_ordered.txt
+Dataset size: 0.04 MB
+
+ ITEM ESTIMATIONS 
+Item 123 → estimation: 990, real: 989
+Item 456 → estimation: 1015, real: 1014
+Item 999 → estimation: 2 (expected: 0 or small)
+Range 100–110 → estimation: 968, real: 957
+
+ TIMINGS 
+Total time: 0.002548 seconds
+I/O + parsing time: 0.001863 s
+CMS update time: 0.000594 s
+
+ --------------------------------------
+Running openmp_only on data/dataset_1000000_ordered.txt ...
+Parallel Count-Min Sketch (OpenMP only, per-thread private CMS)
+
+ MEMORY USAGE 
+CMS total global: 0.16 MB
+
+ DATASET INFO 
+Dataset file: data/dataset_1000000_ordered.txt
+Dataset size: 3.81 MB
+
+ ITEM ESTIMATIONS 
+Item 123 → estimation: 100587, real: 100431
+Item 456 → estimation: 100124, real: 99883
+Item 999 → estimation: 214 (expected: 0 or small)
+Range 100–110 → estimation: 101799, real: 99924
+
+ TIMINGS 
+Total time: 0.089425 seconds
+I/O + parsing time: 0.073275 s
+CMS update time: 0.015982 s
+
+ --------------------------------------
+Running openmp_only on data/dataset_10000000_ordered.txt ...
+Parallel Count-Min Sketch (OpenMP only, per-thread private CMS)
+
+ MEMORY USAGE 
+CMS total global: 0.16 MB
+
+ DATASET INFO 
+Dataset file: data/dataset_10000000_ordered.txt
+Dataset size: 38.15 MB
+
+ ITEM ESTIMATIONS 
+Item 123 → estimation: 1000728, real: 998459
+Item 456 → estimation: 1001367, real: 1000564
+Item 999 → estimation: 1604 (expected: 0 or small)
+Range 100–110 → estimation: 1018481, real: 999220
+
+ TIMINGS 
+Total time: 0.882730 seconds
+I/O + parsing time: 0.726655 s
+CMS update time: 0.155903 s
+
+ --------------------------------------
+Running openmp_only on data/dataset_100000000_ordered.txt ...
+Parallel Count-Min Sketch (OpenMP only, per-thread private CMS)
+
+ MEMORY USAGE 
+CMS total global: 0.16 MB
+
+ DATASET INFO 
+Dataset file: data/dataset_100000000_ordered.txt
+Dataset size: 381.47 MB
+
+ ITEM ESTIMATIONS 
+Item 123 → estimation: 10022604, real: 9999525
+Item 456 → estimation: 10013126, real: 10005294
+Item 999 → estimation: 15610 (expected: 0 or small)
+Range 100–110 → estimation: 10196093, real: 10001909
+
+ TIMINGS 
+Total time: 8.763305 seconds
+I/O + parsing time: 7.183818 s
+CMS update time: 1.579301 s
+
+ --------------------------------------
+Running openmp_only on data/dataset_1000000000_ordered.txt ...
 Parallel Count-Min Sketch (OpenMP only, per-thread private CMS)
 
  MEMORY USAGE 
@@ -8,14 +97,14 @@ Dataset file: data/dataset_1000000000_ordered.txt
 Dataset size: 3814.70 MB
 
  ITEM ESTIMATIONS 
-Item 123 → estimation: 100226875, real: 99994029
-Item 456 → estimation: 100090656, real: 100013056
-Item 999 → estimation: 232888 (expected: 0 or small)
-Range 100–110 → estimation: 101704814, real: 99994707
+Item 123 → estimation: 100071826, real: 99994029
+Item 456 → estimation: 100090834, real: 100013056
+Item 999 → estimation: 77627 (expected: 0 or small)
+Range 100–110 → estimation: 101861788, real: 99994707
 
  TIMINGS 
-Total time: 99.985216 seconds
-I/O + parsing time: 83.733842 s
-CMS update time: 16.251276 s
+Total time: 89.558970 seconds
+I/O + parsing time: 73.253510 s
+CMS update time: 16.305244 s
 
  --------------------------------------

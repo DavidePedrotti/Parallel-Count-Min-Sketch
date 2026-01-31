@@ -22,10 +22,10 @@ datasets=(
     data/dataset_1000000000_ordered.txt
 )
 
-output_file="output_omp.txt"
+output_file="output_omp2.txt"
 
 # Loop sui dataset
 for dataset in "${datasets[@]}"; do
-    echo "Running openmp_only on $dataset ..." >> "$output_file"
-    ./openmp_only "$dataset" >> "$output_file" 2>&1
+    echo "Running openmp_only2 on $dataset ..." >> "$output_file"
+    ./openmp_only2 "$dataset" >> "$output_file" 2>&1
 done

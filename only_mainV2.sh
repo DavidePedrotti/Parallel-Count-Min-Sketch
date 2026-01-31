@@ -9,5 +9,19 @@ module load mpich-3.2
 
 cd $PBS_O_WORKDIR
 
-# Run benchmark
-mpirun.actual -np 2 ./mainV2 data/dataset_1000000000_ordered.txt >> output_mainV2.txt
+# Array dei dataset
+datasets=(
+    data/dataset_10000_ordered.txt
+    data/dataset_1000000_ordered.txt
+    data/dataset_10000000_ordered.txt
+    data/dataset_100000000_ordered.txt
+    data/dataset_1000000000_ordered.txt
+)
+
+output_file="output_mainV2.txt"
+
+# Loop sui dataset
+for dataset in "${datasets[@]}"; do
+    echo "Running main on $dataset ..." >> "$output_file"
+    mpirun.actual -np 2 ./mainV2 "$dataset" >> "$output_file" 2>&1
+done

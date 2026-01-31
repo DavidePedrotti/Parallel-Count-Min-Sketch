@@ -1,3 +1,104 @@
+Running main on data/dataset_10000_ordered.txt ...
+Parallel Count-Min Sketch (MAINV2)
+
+ DATASET INFO 
+Dataset file: data/dataset_10000_ordered.txt
+File size on disk: 0.04 MB
+
+--- ITEM ESTIMATIONS ---
+Item 123 → estimation: 990, real: 989
+Item 456 → estimation: 1017, real: 1014
+Item 999 → estimation: 0 (expected: 0 or a small number)
+
+Start Test: Range Query
+Range 100–110 → estimation: 969, real: 957
+
+--- TIMINGS ---
+Total time: 0.045946 seconds
+I/O + parsing time: 0.045109 s
+CMS update time: 0.000639 s
+Reduction time: 0.000099 s
+Point query time: 4.126453e-08 s
+Range query time: 3.606811e-07 s
+Inner product time: 2.336112e-05 s
+
+ --------------------------------------
+Running main on data/dataset_1000000_ordered.txt ...
+Parallel Count-Min Sketch (MAINV2)
+
+ DATASET INFO 
+Dataset file: data/dataset_1000000_ordered.txt
+File size on disk: 4.48 MB
+
+--- ITEM ESTIMATIONS ---
+Item 123 → estimation: 100431, real: 100431
+Item 456 → estimation: 100092, real: 99883
+Item 999 → estimation: 66 (expected: 0 or a small number)
+
+Start Test: Range Query
+Range 100–110 → estimation: 101004, real: 99924
+
+--- TIMINGS ---
+Total time: 0.183736 seconds
+I/O + parsing time: 0.163268 s
+CMS update time: 0.020298 s
+Reduction time: 0.000057 s
+Point query time: 3.593922e-08 s
+Range query time: 3.875082e-07 s
+Inner product time: 2.254176e-05 s
+
+ --------------------------------------
+Running main on data/dataset_10000000_ordered.txt ...
+Parallel Count-Min Sketch (MAINV2)
+
+ DATASET INFO 
+Dataset file: data/dataset_10000000_ordered.txt
+File size on disk: 44.82 MB
+
+--- ITEM ESTIMATIONS ---
+Item 123 → estimation: 1000779, real: 998459
+Item 456 → estimation: 1003724, real: 1000564
+Item 999 → estimation: 1643 (expected: 0 or a small number)
+
+Start Test: Range Query
+Range 100–110 → estimation: 1014887, real: 999220
+
+--- TIMINGS ---
+Total time: 1.209016 seconds
+I/O + parsing time: 0.999509 s
+CMS update time: 0.209238 s
+Reduction time: 0.000097 s
+Point query time: 3.441477e-08 s
+Range query time: 3.918982e-07 s
+Inner product time: 2.369171e-05 s
+
+ --------------------------------------
+Running main on data/dataset_100000000_ordered.txt ...
+Parallel Count-Min Sketch (MAINV2)
+
+ DATASET INFO 
+Dataset file: data/dataset_100000000_ordered.txt
+File size on disk: 448.22 MB
+
+--- ITEM ESTIMATIONS ---
+Item 123 → estimation: 10014957, real: 9999525
+Item 456 → estimation: 10020739, real: 10005294
+Item 999 → estimation: 7788 (expected: 0 or a small number)
+
+Start Test: Range Query
+Range 100–110 → estimation: 10188016, real: 10001909
+
+--- TIMINGS ---
+Total time: 7.676110 seconds
+I/O + parsing time: 5.525851 s
+CMS update time: 2.150078 s
+Reduction time: 0.000098 s
+Point query time: 3.236723e-08 s
+Range query time: 3.900399e-07 s
+Inner product time: 2.357154e-05 s
+
+ --------------------------------------
+Running main on data/dataset_1000000000_ordered.txt ...
 Parallel Count-Min Sketch (MAINV2)
 
  DATASET INFO 
@@ -5,20 +106,20 @@ Dataset file: data/dataset_1000000000_ordered.txt
 File size on disk: 4482.27 MB
 
 --- ITEM ESTIMATIONS ---
-Item 123 → estimation: 100150162, real: 99994029
-Item 456 → estimation: 100090656, real: 100013056
-Item 999 → estimation: 155253 (expected: 0 or a small number)
+Item 123 → estimation: 100149127, real: 99994029
+Item 456 → estimation: 100168249, real: 100013056
+Item 999 → estimation: 233166 (expected: 0 or a small number)
 
 Start Test: Range Query
-Range 100–110 → estimation: 101393515, real: 99994707
+Range 100–110 → estimation: 101160114, real: 99994707
 
 --- TIMINGS ---
-Total time V2 full chunk: 65.493374 seconds
-I/O + parsing time: 47.559987 s
-CMS update time: 17.933176 s
-Reduction time: 0.000114 s
-Point query time: 3.133965e-08 s
-Range query time: 3.516524e-07 s
-Inner product time: 2.154671e-05 s
+Total time: 64.691612 seconds
+I/O + parsing time: 46.347445 s
+CMS update time: 18.343969 s
+Reduction time: 0.000105 s
+Point query time: 3.272343e-08 s
+Range query time: 3.657730e-07 s
+Inner product time: 2.243118e-05 s
 
  --------------------------------------
