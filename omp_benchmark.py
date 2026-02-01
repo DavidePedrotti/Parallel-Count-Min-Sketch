@@ -18,7 +18,7 @@ RESULTS_DIR = "output_results"
 os.makedirs(RESULTS_DIR, exist_ok=True)
 
 def gen_pbs_script(chunks, cores_per_chunk, mode, threads, executable_name, dataset_folder, dataset_name):
-  name = f"{extract_number_from_dataset(dataset_name)}_{chunks}_{threads}_packexcl"
+  name = f"omp_{extract_number_from_dataset(dataset_name)}_{chunks}_{threads}_packexcl"
   walltime = "0:30:00"
   queue = "short_HPC4DS"
   pbs_script = f"""#!/bin/bash
@@ -65,7 +65,7 @@ def gen_script(configuration, executable_name, dataset_folder, dataset_name):
   mode = configuration['mode']
   threads = configuration['threads']
 
-  name = f"{extract_number_from_dataset(dataset_name)}_{chunks}_{threads}_packexcl"
+  name = f"omp_{extract_number_from_dataset(dataset_name)}_{chunks}_{threads}_packexcl"
   print(f"Running with {name} configuration")
 
   pbs_script = gen_pbs_script(chunks, cores_per_chunk, mode, threads, executable_name, dataset_folder, dataset_name)
@@ -121,9 +121,9 @@ def run_benchmark(pbs_filename, name, mode):
   }
 
 def main():
-  executable_name = "openmp_only"
+  executable_name = "openmp_only2"
   dataset_folder = "data"
-  dataset_name = "dataset_250000000_sorted.txt"
+  dataset_name = "dataset_1000000000_sorted.txt"
 
   all_results = []
 
@@ -177,10 +177,10 @@ def main():
   save_results_to_csv(all_results, dataset_name)
 
   # remove all output/error files
-  subprocess.run(f"rm {extract_number_from_dataset(dataset_name)}_*", shell=True, capture_output=True, text=True)
+  subprocess.run(f"rm omp_{extract_number_from_dataset(dataset_name)}_*", shell=True, capture_output=True, text=True)
 
 def save_results_to_csv(all_results, dataset_name):
-  csv_filename = f"{RESULTS_DIR}/benchmark_results_{extract_number_from_dataset(dataset_name)}_ompv1_packexcl.csv"
+  csv_filename = f"{RESULTS_DIR}/benchmark_results_{extract_number_from_dataset(dataset_name)}_ompv2_packexcl.csv"
   file_exists = os.path.exists(csv_filename)
 
   with open(csv_filename, 'a', newline='') as csvfile:
