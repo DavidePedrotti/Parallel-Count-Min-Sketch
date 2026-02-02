@@ -1,0 +1,6 @@
+configuration,mode,avg_time_taken,avg_point_query,avg_range_query,avg_inner_product
+"{'chunks': 1, 'cores_per_chunk': 1, 'mode': 'pack', 'processes': 1, 'threads': 1}",pack,29.4764578,0,0,0
+"{'chunks': 1, 'cores_per_chunk': 4, 'mode': 'pack', 'processes': 2, 'threads': 2}",pack,33.266377,0,0,0
+"{'chunks': 1, 'cores_per_chunk': 8, 'mode': 'pack', 'processes': 2, 'threads': 4}",pack,46.7686394,0,0,0
+"{'chunks': 1, 'cores_per_chunk': 8, 'mode': 'pack', 'processes': 4, 'threads': 2}",pack,33.8617126,0,0,0
+"{'chunks': 1, 'cores_per_chunk': 16, 'mode': 'pack', 'processes': 4, 'threads': 4}",pack,21.928463,0,0,0
