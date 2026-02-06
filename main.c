@@ -6,10 +6,6 @@
 
 #include "count_min_sketch.h"
 
-/*
- * MPI-only version
- * node 0 reads the dataset and then sends to each node its corresponding data
- */
 
 int main(int argc, char* argv[]) {
     int comm_sz, my_rank;

@@ -20,11 +20,10 @@ int main(int argc, char* argv[]) {
 
     printf("Parallel Count-Min Sketch (OpenMP only, shared CMS with OpenMP atomics)\n");
 
-    // --- CMS initialization ---
+    // CMS initialization 
     CountMinSketch global_cms;
     cms_init(&global_cms, EPSILON, DELTA, PRIME);
 
-    // --- MEMORY USAGE ---
     size_t cms_table_bytes = global_cms.depth * global_cms.width * sizeof(uint32_t);
     size_t cms_hash_bytes = global_cms.depth * sizeof(UniversalHash);
     size_t cms_bytes = cms_table_bytes + cms_hash_bytes;
@@ -32,7 +31,7 @@ int main(int argc, char* argv[]) {
     printf("\n MEMORY USAGE \n");
     printf("CMS total shared: %.2f MB\n", cms_bytes / (1024.0 * 1024.0));
 
-    // --- Read entire file (serial) ---
+    //  Read  file 
     t_io_start = omp_get_wtime();
     FILE* f = fopen(argv[1], "r");
     if (!f) {
@@ -60,7 +59,7 @@ int main(int argc, char* argv[]) {
 
     t_io_end = omp_get_wtime();
 
-    // --- OpenMP parallel update ---
+    // OpenMP parallel update 
     t_update_start = omp_get_wtime();
 
     uint32_t local_123 = 0, local_456 = 0, local_range = 0;

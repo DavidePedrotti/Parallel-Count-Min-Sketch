@@ -28,7 +28,7 @@ int main(int argc, char* argv[]) {
   if (my_rank == 0)
     printf("Parallel Count-Min Sketch (Version 2: Hybrid MPI + OpenMP, shared CMS)\n");
 
-  /* --- CMS initialization --- */
+  // CMS initialization 
   CountMinSketch local_cms;
   if (cms_init(&local_cms, EPSILON, DELTA, PRIME) != 0) {
     if (my_rank == 0)
@@ -40,14 +40,13 @@ int main(int argc, char* argv[]) {
             local_cms.depth * sizeof(UniversalHash),
             MPI_BYTE, 0, MPI_COMM_WORLD);
 
-  /* --- CMS MEMORY USAGE --- */
   size_t cms_table_bytes =
       local_cms.depth * local_cms.width * sizeof(uint32_t);
   size_t cms_hash_bytes =
       local_cms.depth * sizeof(UniversalHash);
   size_t cms_bytes = cms_table_bytes + cms_hash_bytes;
 
-  size_t cms_total_rank_bytes = cms_bytes; /* shared CMS */
+  size_t cms_total_rank_bytes = cms_bytes; 
   size_t cms_total_global_bytes = cms_total_rank_bytes * comm_sz;
 
   if (my_rank == 0) {
@@ -69,7 +68,6 @@ int main(int argc, char* argv[]) {
   MPI_Offset file_size;
   MPI_File_get_size(fh, &file_size);
 
-  /* --- DATASET INFO --- */
   double dataset_size_mb = file_size / (1024.0 * 1024.0);
   if (my_rank == 0) {
     printf("\n DATASET INFO \n");
@@ -123,7 +121,6 @@ int main(int argc, char* argv[]) {
 
   MPI_File_close(&fh);
 
-  /* --- Parse lines --- */
   size_t line_count = 0;
   for (char* p = buffer; *p; p++)
     if (*p == '\n') line_count++;
@@ -142,7 +139,7 @@ int main(int argc, char* argv[]) {
   MPI_Barrier(MPI_COMM_WORLD);
   double t_io_end = MPI_Wtime();
 
-  /* --- CMS update + counts --- */
+  // CMS update + counts 
   MPI_Barrier(MPI_COMM_WORLD);
   double t_update_start = MPI_Wtime();
 
@@ -170,7 +167,7 @@ int main(int argc, char* argv[]) {
   MPI_Barrier(MPI_COMM_WORLD);
   double t_update_end = MPI_Wtime();
 
-  /* --- MPI Reduction --- */
+  // MPI Reduction 
   MPI_Barrier(MPI_COMM_WORLD);
   double t_reduce_start = MPI_Wtime();
 
@@ -215,7 +212,7 @@ int main(int argc, char* argv[]) {
   MPI_Barrier(MPI_COMM_WORLD);
   double t_reduce_end = MPI_Wtime();
 
-  /* --- Test queries and timings --- */
+  // Test queries and timings 
   if (my_rank == 0) {
     printf("\n ITEM ESTIMATIONS \n");
     printf("Item 123 → estimation: %u, real: %u\n",

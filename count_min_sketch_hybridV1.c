@@ -5,7 +5,7 @@
 #include <limits.h>
 #include <math.h>
 
-/* ---------- SERIAL CMS ---------- */
+// SERIAL CMS
 uint32_t cms_init(CountMinSketch* cms, double epsilon, double delta, uint32_t prime) {
     cms->epsilon = epsilon;
     cms->delta = delta;

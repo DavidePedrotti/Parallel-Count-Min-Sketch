@@ -9,7 +9,6 @@ cd $PBS_O_WORKDIR
 module load mpich-3.2
 export OMP_NUM_THREADS=4
 
-# Array dei dataset
 datasets=(
     data/dataset_10000_ordered.txt
     data/dataset_1000000_ordered.txt
@@ -18,10 +17,8 @@ datasets=(
     data/dataset_1000000000_ordered.txt
 )
 
-# File unico per l'output
 output_file="output_V3.txt"
 
-# Loop sui dataset
 for dataset in "${datasets[@]}"; do
     echo "Running hybridV3 on $dataset ..." >> "$output_file"
     mpirun.actual -n 2 ./hybridV3 "$dataset" >> "$output_file" 2>&1

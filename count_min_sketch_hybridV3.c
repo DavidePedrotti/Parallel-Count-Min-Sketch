@@ -6,7 +6,7 @@
 #include <limits.h>
 #include <omp.h>
 
-/* ---------- SERIAL CMS ---------- */
+// SERIAL CMS 
 uint32_t cms_init(CountMinSketch* cms, double epsilon, double delta, uint32_t prime) {
     cms->epsilon = epsilon;
     cms->delta = delta;
@@ -94,7 +94,6 @@ uint32_t cms_point_query_int(CountMinSketch* cms, uint32_t item) {
     return min_count;
 }
 
-/* ---------- NUOVE FUNZIONI PARALLELE ---------- */
 uint32_t cms_range_query_int_parallel(CountMinSketch* cms, int start, int end) {
     uint32_t total = 0;
     #pragma omp parallel for reduction(+:total)

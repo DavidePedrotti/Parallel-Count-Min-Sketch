@@ -8,11 +8,6 @@
 
 #include "count_min_sketch.h"
 
-/*
- * Parallel Count-Min Sketch (MAINV2)
- * MPI-I/O safe for large files
- */
-
 int main(int argc, char* argv[]) {
     int comm_sz, my_rank;
     MPI_Init(&argc, &argv);
@@ -37,7 +32,7 @@ int main(int argc, char* argv[]) {
               local_cms.depth * sizeof(UniversalHash),
               MPI_BYTE, 0, MPI_COMM_WORLD);
 
-    // ---------------- MPI-I/O ----------------
+    // MPI-I/O 
     MPI_Barrier(MPI_COMM_WORLD);
     double t_io_start = MPI_Wtime();
 
@@ -116,7 +111,6 @@ int main(int argc, char* argv[]) {
     uint32_t* local_items = malloc(local_line_count * sizeof(uint32_t));
     if (!local_items) MPI_Abort(MPI_COMM_WORLD, 99);
 
-    // Parse numbers
     size_t idx = 0;
     char* token = strtok(buffer, "\n");
     while (token) {

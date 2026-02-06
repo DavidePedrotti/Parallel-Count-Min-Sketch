@@ -91,7 +91,7 @@ int main(int argc, char* argv[]) {
     MPI_Barrier(MPI_COMM_WORLD);
     t_io_end=MPI_Wtime();
 
-    /* --- CMS update --- */
+    // CMS update 
     MPI_Barrier(MPI_COMM_WORLD);
     t_update_start=MPI_Wtime();
 
@@ -130,7 +130,7 @@ int main(int argc, char* argv[]) {
     t_update_end=MPI_Wtime();
     free(local_items);
 
-    /* --- MPI Reduction --- */
+    // MPI Reduction 
     MPI_Barrier(MPI_COMM_WORLD);
     t_reduce_start=MPI_Wtime();
 
