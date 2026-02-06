@@ -21,7 +21,7 @@ int main(int argc, char* argv[]) {
     MPI_Comm_size(MPI_COMM_WORLD, &comm_sz);
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
 
-    /* --- Timing variables --- */
+    // Timing variables
     double t_start, t_io_start, t_io_end;
     double t_update_start, t_update_end;
     double t_reduce_start, t_reduce_end;
@@ -35,7 +35,7 @@ int main(int argc, char* argv[]) {
     if (my_rank == 0)
         printf("Parallel Count-Min Sketch (V1: Hybrid MPI + OpenMP, per-thread private CMS)\n");
 
-    /* --- CMS initialization --- */
+    // CMS initialization 
     CountMinSketch local_cms;
     if (cms_init(&local_cms, EPSILON, DELTA, PRIME) != 0) {
         if (my_rank == 0) fprintf(stderr, "Error initializing CMS\n");
@@ -46,7 +46,6 @@ int main(int argc, char* argv[]) {
               local_cms.depth * sizeof(UniversalHash),
               MPI_BYTE, 0, MPI_COMM_WORLD);
 
-    /* --- CMS MEMORY USAGE --- */
     size_t cms_table_bytes =
         local_cms.depth * local_cms.width * sizeof(uint32_t);
     size_t cms_hash_bytes =
@@ -66,7 +65,7 @@ int main(int argc, char* argv[]) {
 
     const char* FILENAME = argv[1];
 
-    /* --- MPI I/O --- */
+    // MPI I/O 
     MPI_Barrier(MPI_COMM_WORLD);
     t_io_start = MPI_Wtime();
 
@@ -77,7 +76,6 @@ int main(int argc, char* argv[]) {
     MPI_Offset file_size;
     MPI_File_get_size(fh, &file_size);
 
-    /* --- DATASET SIZE INFO --- */
     double dataset_size_mb = file_size / (1024.0 * 1024.0);
     if (my_rank == 0) {
         printf("\n DATASET INFO \n");
@@ -131,7 +129,7 @@ int main(int argc, char* argv[]) {
 
     MPI_File_close(&fh);
 
-    /* --- Count lines --- */
+    // Count lines
     size_t line_count = 0;
     for (char* p = buffer; *p; p++)
         if (*p == '\n') line_count++;
@@ -150,7 +148,7 @@ int main(int argc, char* argv[]) {
     MPI_Barrier(MPI_COMM_WORLD);
     t_io_end = MPI_Wtime();
 
-    /* --- CMS update + local counts --- */
+    // CMS update + local counts 
     MPI_Barrier(MPI_COMM_WORLD);
     t_update_start = MPI_Wtime();
 
@@ -237,7 +235,7 @@ int main(int argc, char* argv[]) {
     MPI_Barrier(MPI_COMM_WORLD);
     t_reduce_end = MPI_Wtime();
 
-    /* --- Test queries and timings --- */
+    // Test queries and timings
     if (my_rank == 0) {
         printf("\n ITEM ESTIMATIONS \n");
 

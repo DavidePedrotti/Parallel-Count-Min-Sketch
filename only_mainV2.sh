@@ -9,7 +9,6 @@ module load mpich-3.2
 
 cd $PBS_O_WORKDIR
 
-# Array dei dataset
 datasets=(
     data/dataset_10000_ordered.txt
     data/dataset_1000000_ordered.txt
@@ -20,7 +19,6 @@ datasets=(
 
 output_file="output_mainV2.txt"
 
-# Loop sui dataset
 for dataset in "${datasets[@]}"; do
     echo "Running main on $dataset ..." >> "$output_file"
     mpirun.actual -np 2 ./mainV2 "$dataset" >> "$output_file" 2>&1

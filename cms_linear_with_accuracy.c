@@ -7,9 +7,8 @@
 
 #include "count_min_sketch.h"
 
-/*
- * Linear CMS version
- */
+// Linear CMS version with accuracy
+
 
 int main(int argc, char* argv[]) {
   MPI_Init(&argc, &argv);

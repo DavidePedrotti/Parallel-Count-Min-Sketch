@@ -13,7 +13,6 @@ export OMP_NUM_THREADS=4
 export OMP_PROC_BIND=close
 export OMP_PLACES=cores
 
-# Array dei dataset
 datasets=(
     data/dataset_10000_ordered.txt
     data/dataset_1000000_ordered.txt
@@ -24,7 +23,6 @@ datasets=(
 
 output_file="output_omp.txt"
 
-# Loop sui dataset
 for dataset in "${datasets[@]}"; do
     echo "Running openmp_only on $dataset ..." >> "$output_file"
     ./openmp_only "$dataset" >> "$output_file" 2>&1
