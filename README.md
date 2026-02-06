@@ -29,17 +29,17 @@ This project implements and benchmarks different parallelization strategies for 
 
 ```
 Parallel-Count-Min-Sketch/
-├── count_min_sketch.h/c       # Core CMS data structure
-├── cms_linear.c, cms_linear_with_accuracy.c # Serial implementation
-├── main.c, mainV2.c           # MPI implementations
-├── hybridV1.c, hybridV2.c, hybridV3.c     # Hybrid MPI+OpenMP
-├── openmp_only.c, openmp_only2.c             # OpenMP implementations
-├── only_cms_linear.sh, only_mainV*.sh, only_hybridV*.sh, only_openmp*.sh  # Execution scripts
-├── Makefile                   # Build configuration
-├── scripts/                   # Data generation and analysis
-├── csv_results/               # Benchmark results
-├── plots/                     # Generated visualizations
-└── data/                      # Test datasets
+├── count_min_sketch.h/c                                                    # Core CMS data structure
+├── cms_linear.c, cms_linear_with_accuracy.c                                # Serial implementation
+├── main.c, mainV2.c                                                        # MPI implementations
+├── hybridV1.c, hybridV2.c, hybridV3.c                                      # Hybrid MPI+OpenMP
+├── openmp_only.c, openmp_only2.c                                           # OpenMP implementations
+├── only_cms_linear.sh, only_mainV*.sh, only_hybridV*.sh, only_openmp*.sh   # Execution scripts
+├── Makefile                                                                # Build configuration
+├── scripts/                                                                # Data generation and analysis
+├── csv_results/                                                            # Benchmark results
+├── plots/                                                                  # Generated visualizations
+└── data/                                                                   # Test datasets
 ```
 
 ## Building
