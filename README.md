@@ -158,10 +158,6 @@ This executes comprehensive benchmarks across:
 
 ### Analyze Results
 
-```bash
-python benchmark_metrics.py      # Compute speedup and efficiency
-```
-
 The scripts used to benchmark the implementations are the following:
 
 - `mpi_benchmark.py`: Benchmarks the MPI implementations
@@ -169,3 +165,11 @@ The scripts used to benchmark the implementations are the following:
 - `openmp_benchmark.py`: Benchmarks the OpenMP implementations
 
 The benchmark scripts expect the executables to be placed in the root directory. The results are saved in `csv_results/`.
+
+The script:
+
+```bash
+python benchmark_metrics.py      # Compute speedup and efficiency
+```
+
+can also be used to benchmark the implementations.
