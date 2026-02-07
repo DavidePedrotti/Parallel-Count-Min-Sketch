@@ -5,7 +5,6 @@ LDFLAGS = -lm
 # OpenMP configuration
 # CC = gcc
 # CFLAGS += -fopenmp
-# no LDLFLAGS needed
 
 SRCS = count_min_sketch.c mainV2.c
 # SRCS = count_min_sketch.c mainV2.c

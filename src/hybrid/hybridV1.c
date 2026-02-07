@@ -7,7 +7,7 @@
 #include <string.h>
 #include <time.h>
 
-#include "count_min_sketch_hybridV2.h"
+#include "../core/count_min_sketch_hybridV1.h"
 
 int main(int argc, char* argv[]) {
   if (argc < 2) {
@@ -20,19 +20,24 @@ int main(int argc, char* argv[]) {
   MPI_Comm_size(MPI_COMM_WORLD, &comm_sz);
   MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
 
+  // Timing variables
+  double t_start, t_io_start, t_io_end;
+  double t_update_start, t_update_end;
+  double t_reduce_start, t_reduce_end;
+  double t_end;
+
   MPI_Barrier(MPI_COMM_WORLD);
-  double t_start = MPI_Wtime();
+  t_start = MPI_Wtime();
 
   srand(time(NULL) + my_rank);
 
   if (my_rank == 0)
-    printf("Parallel Count-Min Sketch (Version 2: Hybrid MPI + OpenMP, shared CMS)\n");
+    printf("Parallel Count-Min Sketch (V1: Hybrid MPI + OpenMP, per-thread private CMS)\n");
 
-  // CMS initialization 
+  // CMS initialization
   CountMinSketch local_cms;
   if (cms_init(&local_cms, EPSILON, DELTA, PRIME) != 0) {
-    if (my_rank == 0)
-      fprintf(stderr, "Error in cms_init\n");
+    if (my_rank == 0) fprintf(stderr, "Error initializing CMS\n");
     MPI_Abort(MPI_COMM_WORLD, 1);
   }
 
@@ -46,7 +51,9 @@ int main(int argc, char* argv[]) {
       local_cms.depth * sizeof(UniversalHash);
   size_t cms_bytes = cms_table_bytes + cms_hash_bytes;
 
-  size_t cms_total_rank_bytes = cms_bytes; 
+  int omp_threads = omp_get_max_threads();
+  size_t cms_threads_bytes = omp_threads * cms_bytes;
+  size_t cms_total_rank_bytes = cms_bytes + cms_threads_bytes;
   size_t cms_total_global_bytes = cms_total_rank_bytes * comm_sz;
 
   if (my_rank == 0) {
@@ -57,13 +64,13 @@ int main(int argc, char* argv[]) {
 
   const char* FILENAME = argv[1];
 
-  /* --- MPI I/O --- */
+  // MPI I/O
   MPI_Barrier(MPI_COMM_WORLD);
-  double t_io_start = MPI_Wtime();
+  t_io_start = MPI_Wtime();
 
   MPI_File fh;
-  MPI_File_open(MPI_COMM_WORLD, FILENAME,
-                MPI_MODE_RDONLY, MPI_INFO_NULL, &fh);
+  MPI_File_open(MPI_COMM_WORLD, FILENAME, MPI_MODE_RDONLY,
+                MPI_INFO_NULL, &fh);
 
   MPI_Offset file_size;
   MPI_File_get_size(fh, &file_size);
@@ -121,6 +128,7 @@ int main(int argc, char* argv[]) {
 
   MPI_File_close(&fh);
 
+  // Count lines
   size_t line_count = 0;
   for (char* p = buffer; *p; p++)
     if (*p == '\n') line_count++;
@@ -137,39 +145,54 @@ int main(int argc, char* argv[]) {
   free(buffer);
 
   MPI_Barrier(MPI_COMM_WORLD);
-  double t_io_end = MPI_Wtime();
+  t_io_end = MPI_Wtime();
 
-  // CMS update + counts 
+  // CMS update + local counts
   MPI_Barrier(MPI_COMM_WORLD);
-  double t_update_start = MPI_Wtime();
+  t_update_start = MPI_Wtime();
 
   uint32_t local_123 = 0, local_456 = 0, local_range = 0;
-  uint32_t local_123_private = 0;
-  uint32_t local_456_private = 0;
-  uint32_t local_range_private = 0;
 
-#pragma omp parallel for reduction(+ : local_123_private, local_456_private, local_range_private)
-  for (size_t i = 0; i < idx; i++) {
-    uint32_t val = local_items[i];
-    cms_update_int_parallel(&local_cms, val, 1);
+#pragma omp parallel
+  {
+    CountMinSketch thread_cms;
+    cms_init_private(&thread_cms, &local_cms);
 
-    if (val == 123) local_123_private++;
-    if (val == 456) local_456_private++;
-    if (val >= 100 && val <= 110) local_range_private++;
+    uint32_t local_123_private = 0;
+    uint32_t local_456_private = 0;
+    uint32_t local_range_private = 0;
+
+#pragma omp for
+    for (size_t i = 0; i < idx; i++) {
+      uint32_t val = local_items[i];
+      cms_update_int_parallel(&thread_cms, val, 1);
+
+      if (val == 123) local_123_private++;
+      if (val == 456) local_456_private++;
+      if (val >= 100 && val <= 110) local_range_private++;
+    }
+
+#pragma omp critical
+    {
+      for (uint32_t d = 0; d < local_cms.depth; d++)
+        for (uint32_t w = 0; w < local_cms.width; w++)
+          local_cms.table[d][w] += thread_cms.table[d][w];
+
+      local_cms.total += thread_cms.total;
+      local_123 += local_123_private;
+      local_456 += local_456_private;
+      local_range += local_range_private;
+    }
+
+    cms_free_private(&thread_cms);
   }
 
-  local_123 = local_123_private;
-  local_456 = local_456_private;
-  local_range = local_range_private;
-
+  t_update_end = MPI_Wtime();
   free(local_items);
 
+  /* --- MPI Reduction --- */
   MPI_Barrier(MPI_COMM_WORLD);
-  double t_update_end = MPI_Wtime();
-
-  // MPI Reduction 
-  MPI_Barrier(MPI_COMM_WORLD);
-  double t_reduce_start = MPI_Wtime();
+  t_reduce_start = MPI_Wtime();
 
   CountMinSketch global_cms;
   if (my_rank == 0) {
@@ -201,8 +224,7 @@ int main(int argc, char* argv[]) {
   MPI_Reduce(&local_cms.total,
              (my_rank == 0 ? &global_cms.total : NULL),
              1, MPI_UINT32_T, MPI_SUM,
-             0,
-             MPI_COMM_WORLD);
+             0, MPI_COMM_WORLD);
 
   uint32_t true_123 = 0, true_456 = 0, true_range = 0;
   MPI_Reduce(&local_123, &true_123, 1, MPI_UINT32_T, MPI_SUM, 0, MPI_COMM_WORLD);
@@ -210,22 +232,27 @@ int main(int argc, char* argv[]) {
   MPI_Reduce(&local_range, &true_range, 1, MPI_UINT32_T, MPI_SUM, 0, MPI_COMM_WORLD);
 
   MPI_Barrier(MPI_COMM_WORLD);
-  double t_reduce_end = MPI_Wtime();
+  t_reduce_end = MPI_Wtime();
 
-  // Test queries and timings 
+  // Test queries and timings
   if (my_rank == 0) {
     printf("\n ITEM ESTIMATIONS \n");
-    printf("Item 123 → estimation: %u, real: %u\n",
-           cms_point_query_int(&global_cms, 123), true_123);
+
+    uint32_t est_123 = cms_point_query_int(&global_cms, 123);
+    uint32_t est_range = cms_range_query_int(&global_cms, 100, 110);
+
+    printf("Item 123 → estimation: %u, real: %u\n", est_123, true_123);
     printf("Item 456 → estimation: %u, real: %u\n",
            cms_point_query_int(&global_cms, 456), true_456);
     printf("Item 999 → estimation: %u (expected: 0 or small)\n",
            cms_point_query_int(&global_cms, 999));
     printf("Range 100–110 → estimation: %u, real: %u\n",
-           cms_range_query_int(&global_cms, 100, 110), true_range);
+           est_range, true_range);
+
+    t_end = MPI_Wtime();
 
     printf("\n TIMINGS \n");
-    printf("Total time: %f seconds\n", t_reduce_end - t_start);
+    printf("Total time: %f seconds\n", t_end - t_start);
     printf("I/O + parsing time: %f s\n", t_io_end - t_io_start);
     printf("CMS update time: %f s\n", t_update_end - t_update_start);
     printf("Reduction time: %f s\n", t_reduce_end - t_reduce_start);

@@ -5,7 +5,7 @@
 #include <string.h>
 #include <time.h>
 
-#include "count_min_sketch.h"
+#include "../core/count_min_sketch.h"
 
 #define MAX_LINE_LEN 64
 
@@ -74,7 +74,7 @@ int main(int argc, char* argv[]) {
       local_items[idx++] = (uint32_t)atoi(line);
     }
     curr_line++;
-    if (curr_line >= end_idx) break;  
+    if (curr_line >= end_idx) break;
   }
   fclose(fp);
 
@@ -83,7 +83,7 @@ int main(int argc, char* argv[]) {
   for (size_t i = 0; i < local_count; i++) {
     uint32_t val = local_items[i];
     cms_update_int(&local_cms, val, 1);
-    
+
     // Count ground truth values
     if (val == 123) local_123++;
     if (val == 456) local_456++;
@@ -124,18 +124,18 @@ int main(int argc, char* argv[]) {
     double t_point_start = MPI_Wtime();
     test_basic_update_query(&global_cms, true_123, true_456);
     double t_point_end = MPI_Wtime();
-    
+
     // Range Query Test
     double t_range_start = MPI_Wtime();
     test_range_query(&global_cms, true_range);
     double t_range_end = MPI_Wtime();
-    
+
     // Inner Product Test
     double t_inner_start = MPI_Wtime();
     uint64_t inner_prod = cms_inner_product(&global_cms, &global_cms);
     double t_inner_end = MPI_Wtime();
     printf("Inner product (self): %lu\n", (unsigned long)inner_prod);
-    
+
     printf("\nQuery Timing:\n");
     printf("Point query time:  %f s\n", t_point_end - t_point_start);
     printf("Range query time:  %f s\n", t_range_end - t_range_start);
@@ -156,4 +156,3 @@ int main(int argc, char* argv[]) {
   MPI_Finalize();
   return 0;
 }
-
