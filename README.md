@@ -9,20 +9,24 @@ This project implements and benchmarks different parallelization strategies for 
 ## Implementations
 
 ### MPI Versions
+
 - **MPI Version 1 (`main.c`)**: Uses `MPI_Scatterv` for data distribution
 - **MPI Version 2 (`mainV2.c`)**: Uses parallel file I/O with `MPI_File_read_at`
   - Supports `pack` and `scatter` modes with optional `:excl` binding
 
 ### Hybrid MPI+OpenMP Versions
+
 - **Hybrid V1 (`hybridV1.c`)**: Thread-private CMS copies (best hybrid performance)
 - **Hybrid V2 (`hybridV2.c`)**: Shared CMS with atomic operations (poor scaling)
 - **Hybrid V3 (`hybridV3.c`)**: Alternative hybrid implementation
 
 ### OpenMP Versions
-- **OpenMP V1 (`openmp_only.c`)**: Thread-private CMS copies
-- **OpenMP V2 (`openmp_only2.c`)**: Shared CMS with atomic operations
+
+- **OpenMP V1 (`openmpV1.c`)**: Thread-private CMS copies
+- **OpenMP V2 (`openmpV2.c`)**: Shared CMS with atomic operations
 
 ### Serial Version
+
 - **Serial (`cms_linear.c`)**: Baseline sequential implementation
 
 ## Project Structure
@@ -45,7 +49,8 @@ Parallel-Count-Min-Sketch/
 ## Building
 
 ### Prerequisites
-- MPI implementation 
+
+- MPI implementation
 - GCC with OpenMP support
 - Python 3.x for analysis scripts
 - PBS for cluster job submission
@@ -53,21 +58,25 @@ Parallel-Count-Min-Sketch/
 ### Compilation
 
 **MPI Version:**
+
 ```bash
 mpicc -g -Wall -std=c99 -o mainV2 count_min_sketch.c mainV2.c -lm
 ```
 
 **Hybrid Version:**
+
 ```bash
 mpicc -g -Wall -std=c99 -fopenmp -o hybridV1 count_min_sketch_hybridV1.c hybridV1.c -lm
 ```
 
 **OpenMP Version:**
+
 ```bash
 gcc -g -Wall -std=c99 -fopenmp -o openmp_only count_min_sketch.c openmp_only.c -lm
 ```
 
 Or use the provided Makefile:
+
 ```bash
 make
 ```
@@ -75,22 +84,26 @@ make
 ## Running
 
 ### MPI Execution
+
 ```bash
 mpirun -np 4 ./mainV2 data/dataset_250m.txt
 ```
 
 Or use the provided script:
+
 ```bash
 ./only_mainV2.sh
 ```
 
 ### Hybrid Execution
+
 ```bash
 mpirun -np 2 ./hybridV1 data/dataset_250m.txt 4
 # 2 MPI processes × 4 OpenMP threads = 8 total cores
 ```
 
 Or use the provided scripts:
+
 ```bash
 ./only_hybridV1.sh
 ./only_hybridV2.sh
@@ -98,19 +111,23 @@ Or use the provided scripts:
 ```
 
 ### OpenMP Execution
+
 ```bash
 export OMP_NUM_THREADS=8
 ./openmp_only data/dataset_250m.txt
 ```
 
 Or use the provided scripts:
+
 ```bash
 ./only_openmp.sh    # OpenMP V1 (thread-private CMS)
 ./only_openmp2.sh   # OpenMP V2 (shared CMS with atomics)
 ```
 
 ### Cluster Submission (PBS)
+
 For cluster execution with job scheduler:
+
 ```bash
 qsub only_mainV2.sh
 qsub only_hybridV1.sh
@@ -120,6 +137,7 @@ qsub only_openmp.sh
 ## Benchmarking
 
 ### Generate Datasets
+
 ```bash
 cd scripts
 python gen_datasets.py
@@ -127,16 +145,26 @@ python gen_datasets.py
 ```
 
 ### Run Benchmarks
+
 ```bash
 ./run_benchmark.sh
 ```
+
 This executes comprehensive benchmarks across:
+
 - Dataset sizes: 250M, 500M, 1000M elements
 - MPI processes: 1, 2, 4, 8, 16, 32, 64
 - Thread counts: 1, 2, 4, 8, 16
 - Modes: pack, scatter, pack:excl, scatter:excl
 
 ### Analyze Results
+
 ```bash
 python benchmark_metrics.py      # Compute speedup and efficiency
 ```
+
+The scripts used to benchmark the implementations are the following:
+
+- `mpi_benchmark.py`: Benchmarks the MPI implementations
+- `hybrid_benchmark.py`: Benchmarks the hybrid MPI+OpenMP implementations
+- `openmp_benchmark.py`: Benchmarks the OpenMP implementations
